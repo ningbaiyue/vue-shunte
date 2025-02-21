@@ -333,29 +333,16 @@ export default {
             Cookies.remove('password');
             Cookies.remove('rememberMe');
           }
-          this.$store.dispatch('Login', this.loginForm).then(() => {
-              // this.$router.push({ path: this.redirect || '/' }).catch(() => { });
-              this.$store.dispatch('GetInfo').then(res => {
-                // 拉取完user_info信息
-                const roles = res.roles
-                this.$store.dispatch('GenerateRoutes', { roles }).then(accessRoutes => {
-                  // 根据roles权限生成可访问的路由表
-                  // console.log(accessRoutes, from, to.fullPath)
-                   var heardPath=accessRoutes[0].path.split("/")[1]==''?"":accessRoutes[0].path;
-                  this.$router.addRoutes(accessRoutes) // 动态添加可访问路由表
-                  let pathIndex = ''
-                  pathIndex = heardPath + '/' + accessRoutes[0].children[0].path // 设置默认首页地址indexPage
-                  // console.log(this.redirect, pathIndex)
-                  // 1、this.redirect == undefined,主要针对直接从http://172.16.6.205:9090/login，登入系统。
-                  // 2、this.redirect == '/'，主要针对直接从这个http://172.16.6.205:9090/login?redirect=%2F，登入系统。因为没有设置重定向的路由
-                  // 如果登录的时候出现1、2两种情况，那么就跳到路由的第一个路由页面，如果登录的时候，有设置可以访问的重定向地址，那么登录后就跳到重定向地址。
-                  if (pathIndex != '') {
-                    this.$router.push({ path: pathIndex  }).catch(() => {})
-                    //this.$router.push({ path: this.redirect == '/' || this.redirect == undefined ? pathIndex : this.redirect }).catch(() => {}) // 跳转重定向页面或跳到默认首页indexPage
-                  }
+          this.$store
+            .dispatch('Login', this.loginForm)
+            .then(() => {
+              this.$router
+                .push({
+                  path: this.redirect || '/',
                 })
-              })
-          }).catch(() => {
+                .catch(() => { });
+            })
+            .catch(() => {
               this.loading = false;
               if (this.captchaOnOff) {
                 this.getCode();

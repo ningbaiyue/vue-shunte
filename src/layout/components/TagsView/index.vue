@@ -161,10 +161,6 @@ export default {
       }
     },
     closeSelectedTag(view) {
-      if (this.visitedViews.length == 1) {
-        this.$modal.msgWarning("当前为最后一个页签，不允许删除。")
-        return
-      }
       this.$tab.closePage(view).then(({ visitedViews }) => {
         if (this.isActive(view)) {
           this.toLastView(visitedViews, view)
