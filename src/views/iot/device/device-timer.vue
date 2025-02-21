@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-left: 20px">
+  <div>
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="70px">
       <el-form-item label="定时名称" prop="jobName">
         <el-input v-model="queryParams.jobName" placeholder="请输入定时名称" clearable size="small"
@@ -11,11 +11,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
       <el-form-item style="float: right">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+        <el-button type="primary" plain icon="el-icon-plus" size="small" @click="handleAdd"
           v-hasPermi="['iot:device:timer']">新增</el-button>
       </el-form-item>
     </el-form>

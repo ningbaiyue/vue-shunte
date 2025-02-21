@@ -1,182 +1,192 @@
 <template>
-    <el-card style="margin:6px;padding-bottom:100px;">
-        <el-tabs v-model="activeName" tab-position="left" style="padding:10px;min-height:400px;" @tab-click="tabChange">
-            <el-tab-pane name="basic">
-                <span slot="label"><span style="color:red;">* </span>基本信息</span>
-                <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-                    <el-row :gutter="100">
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
-                            <el-form-item label="产品名称" prop="productName">
-                                <el-input v-model="form.productName" placeholder="请输入产品名称" :readonly="form.status == 2" />
-                            </el-form-item>
-                            <el-form-item label="产品分类" prop="categoryId">
-                                <el-select v-model="form.categoryId" placeholder="请选择分类" @change="selectCategory"
-                                    style="width:100%" :disabled="form.status == 2">
-                                    <el-option v-for="category in categoryShortList" :key="category.id"
-                                        :label="category.name" :value="category.id"></el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="设备类型" prop="deviceType">
-                                <el-select v-model="form.deviceType" placeholder="请选择设备类型" :disabled="form.status == 2"
-                                    style="width:100%">
-                                    <el-option v-for="dict in dict.type.iot_device_type" :key="dict.value"
-                                        :label="dict.label" :value="parseInt(dict.value)"></el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="传输协议" prop="transport">
-                                <el-select v-model="form.transport" placeholder="请选择传输协议" style="width: 100%"
-                                    :disabled="form.status == 2">
-                                    <el-option v-for="dict in dict.type.iot_transport_type" :key="dict.value"
-                                        :label="dict.label" :value="dict.value" />
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item v-if="form.deviceType !== 3" label="编码协议" prop="protocolCode">
-                              <el-select v-model="form.protocolCode" placeholder="请选择编码协议" style="width: 100%"
-                                         :disabled="form.status == 2" @change="changeProductCode">
-                                <el-option v-for="p in protocolList" :key="p.protocolCode" :label="p.protocolName"
-                                           :value="p.protocolCode" />
-                              </el-select>
-                            </el-form-item>
-                            <el-form-item label="联网方式" prop="networkMethod">
-                                <el-select v-model="form.networkMethod" placeholder="请选择联网方式" style="width:100%;"
-                                    :disabled="form.status == 2">
-                                    <el-option v-for="dict in dict.type.iot_network_method" :key="dict.value"
-                                        :label="dict.label" :value="parseInt(dict.value)"></el-option>
-                                </el-select>
-                            </el-form-item>
+    <div class="product-edit">
+        <el-card class="top-card" :body-style="{ padding: '26px 20px' }">
+            <div class="title-wrap">
+                <el-button class="top-button" type="info" size="small" icon="el-icon-arrow-left" @click="goBack()">返回</el-button>
+                <span class="info-item">产品名称：{{ form.productName }}</span>
+                <span class="info-item">
+                     是否发布：
+                    <el-button v-if="form.status == 1" type="primary" size="mini" plain @click="changeProductStatus(2)"
+                                          v-hasPermi="['iot:product:add']" style="height: 24px;padding: 0px 10px;">发布产品</el-button>
+                    <el-button v-if="form.status == 2" type="danger" size="mini" plain @click="changeProductStatus(1)"
+                               v-hasPermi="['iot:product:edit']" style="height: 24px;padding: 0px 10px;">取消发布</el-button>
+                </span>
+            </div>
+        </el-card>
 
-                            <el-form-item label="备注信息" prop="remark">
-                                <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" rows="3"
-                                    :readonly="form.status == 2" />
+        <el-card style="padding-bottom:100px;">
+            <el-tabs v-model="activeName" tab-position="top" style="padding: 0 10px; margin-top: -10px;" @tab-click="tabChange">
+                <el-tab-pane class="pane-item" name="basic">
+                    <span slot="label"><span style="color:red;">* </span>基本信息</span>
+                    <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+                        <el-row :gutter="100">
+                            <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
+                                <el-form-item label="产品名称" prop="productName">
+                                    <el-input v-model="form.productName" placeholder="请输入产品名称" :readonly="form.status == 2" />
+                                </el-form-item>
+                                <el-form-item label="产品分类" prop="categoryId">
+                                    <el-select v-model="form.categoryId" placeholder="请选择分类" @change="selectCategory"
+                                               style="width:100%" :disabled="form.status == 2">
+                                        <el-option v-for="category in categoryShortList" :key="category.id"
+                                                   :label="category.name" :value="category.id"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item v-if="form.deviceType !== 3" label="通讯协议" prop="protocolCode">
+                                    <el-select v-model="form.protocolCode" placeholder="请选择通讯协议" style="width: 100%"
+                                               :disabled="form.status == 2" @change="changeProductCode">
+                                        <el-option v-for="p in protocolList" :key="p.protocolCode" :label="p.protocolName"
+                                                   :value="p.protocolCode" />
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="设备类型" prop="deviceType">
+                                    <el-select v-model="form.deviceType" placeholder="请选择设备类型" :disabled="form.status == 2"
+                                               style="width:100%">
+                                        <el-option v-for="dict in dict.type.iot_device_type" :key="dict.value"
+                                                   :label="dict.label" :value="parseInt(dict.value)"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="传输协议" prop="transport">
+                                    <el-select v-model="form.transport" placeholder="请选择传输协议" style="width: 100%"
+                                               :disabled="form.status == 2">
+                                        <el-option v-for="dict in dict.type.iot_transport_type" :key="dict.value"
+                                                   :label="dict.label" :value="dict.value" />
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="联网方式" prop="networkMethod">
+                                    <el-select v-model="form.networkMethod" placeholder="请选择联网方式" style="width:100%;"
+                                               :disabled="form.status == 2">
+                                        <el-option v-for="dict in dict.type.iot_network_method" :key="dict.value"
+                                                   :label="dict.label" :value="parseInt(dict.value)"></el-option>
+                                    </el-select>
+                                </el-form-item>
+
+                                <el-form-item label="备注信息" prop="remark">
+                                    <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" rows="3"
+                                              :readonly="form.status == 2" />
+                                </el-form-item>
+                            </el-col>
+                            <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
+                                <el-form-item label="启用授权" prop="networkMethod">
+                                    <el-switch v-model="form.isAuthorize" @change="changeIsAuthorize(form.isAuthorize)"
+                                               :active-value="1" :inactive-value="0"
+                                               :disabled="form.status == 2 || form.deviceType == 3" />
+                                </el-form-item>
+                                <el-form-item label="认证方式" prop="vertificateMethod">
+                                    <el-select v-model="form.vertificateMethod" placeholder="请选择认证方式" style="width:100%"
+                                               :disabled="form.status == 2 || form.deviceType == 3">
+                                        <el-option v-for="dict in dict.type.iot_vertificate_method" :key="dict.value"
+                                                   :label="dict.label" :value="parseInt(dict.value)"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="定位方式" prop="vertificateMethod">
+                                    <el-select v-model="form.vertificateMethod" placeholder="请选择定位方式" style="width:100%"
+                                               :disabled="form.status == 2 || form.deviceType == 3">
+                                        <el-option v-for="dict in dict.type.iot_vertificate_method" :key="dict.value"
+                                                   :label="dict.label" :value="parseInt(dict.value)"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="产品编号" prop="productId">
+                                    <el-input v-model="form.productId" placeholder="自动生成"
+                                              :disabled="!form.mqttAccount || form.deviceType == 3" readonly />
+                                </el-form-item>
+                                <el-form-item label="Mqtt账号" prop="mqttAccount">
+                                    <el-input v-model="form.mqttAccount" placeholder="不填自动生成" :disabled="form.deviceType == 3"
+                                              :readonly="accountInputType == 'password'" :type="accountInputType">
+                                        <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
+                                                   @click="changeInputType('account')"></el-button>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item label="Mqtt密码" prop="mqttPassword">
+                                    <el-input v-model="form.mqttPassword" placeholder="不填则自动生成" :disabled="form.deviceType == 3"
+                                              :readonly="passwordInputType == 'password'" :type="passwordInputType">
+                                        <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
+                                                   @click="changeInputType('password')"></el-button>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item label="产品秘钥" prop="mqttSecret">
+                                    <el-input v-model="form.mqttSecret" placeholder="自动生成"
+                                              :disabled="!form.mqttAccount || form.deviceType == 3" readonly :type="keyInputType">
+                                        <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
+                                                   @click="changeInputType('key')"></el-button>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
+                                <el-form-item label="产品图片">
+                                    <div v-if="form.status == 2 && form.imgUrl == null">
+                                        <el-image style="height:145px;height:145px;border-radius:10px;"
+                                                  :preview-src-list="[require('@/assets/images/gateway.png')]"
+                                                  :src="require('@/assets/images/gateway.png')" fit="cover"
+                                                  v-if="form.deviceType == 2"></el-image>
+                                        <el-image style="height:145px;height:145px;border-radius:10px;"
+                                                  :preview-src-list="[require('@/assets/images/video.png')]"
+                                                  :src="require('@/assets/images/video.png')" fit="cover"
+                                                  v-else-if="form.deviceType == 3"></el-image>
+                                        <el-image style="height:145px;height:145px;border-radius:10px;"
+                                                  :preview-src-list="[require('@/assets/images/product.png')]"
+                                                  :src="require('@/assets/images/product.png')" fit="cover" v-else></el-image>
+                                    </div>
+                                    <div v-else>
+                                        <imageUpload ref="image-upload" :disabled="true" :value="form.imgUrl"
+                                                     :limit="form.status == 2 ? 0 : 1" :fileSize="1" @input="getImagePath($event)">
+                                        </imageUpload>
+                                    </div>
+                                    <div class="el-upload__tip" style="color:#f56c6c"
+                                         v-if="form.productId == null || form.productId == 0">提示：上传后需要提交保存</div>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+
+                        <el-col :span="20">
+                            <el-form-item style="text-align: center;margin:40px 0px;">
+                                <el-button type="primary" @click="submitForm" v-hasPermi="['iot:product:edit']"
+                                           v-show="form.productId != 0 && form.status != 2">修 改</el-button>
+                                <el-button type="primary" @click="submitForm" v-hasPermi="['iot:product:add']"
+                                           v-show="form.productId == 0 && form.status != 2">新 增</el-button>
                             </el-form-item>
                         </el-col>
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
-                            <el-form-item label="启用授权" prop="networkMethod">
-                                <el-switch v-model="form.isAuthorize" @change="changeIsAuthorize(form.isAuthorize)"
-                                    :active-value="1" :inactive-value="0"
-                                    :disabled="form.status == 2 || form.deviceType == 3" />
-                            </el-form-item>
-                            <el-form-item label="认证方式" prop="vertificateMethod">
-                                <el-select v-model="form.vertificateMethod" placeholder="请选择认证方式" style="width:100%"
-                                    :disabled="form.status == 2 || form.deviceType == 3">
-                                    <el-option v-for="dict in dict.type.iot_vertificate_method" :key="dict.value"
-                                        :label="dict.label" :value="parseInt(dict.value)"></el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="产品编号" prop="productId">
-                                <el-input v-model="form.productId" placeholder="自动生成"
-                                    :disabled="!form.mqttAccount || form.deviceType == 3" readonly />
-                            </el-form-item>
-                            <el-form-item label="Mqtt账号" prop="mqttAccount">
-                                <el-input v-model="form.mqttAccount" placeholder="不填自动生成" :disabled="form.deviceType == 3"
-                                    :readonly="accountInputType == 'password'" :type="accountInputType">
-                                    <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
-                                        @click="changeInputType('account')"></el-button>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="Mqtt密码" prop="mqttPassword">
-                                <el-input v-model="form.mqttPassword" placeholder="不填则自动生成" :disabled="form.deviceType == 3"
-                                    :readonly="passwordInputType == 'password'" :type="passwordInputType">
-                                    <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
-                                        @click="changeInputType('password')"></el-button>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="产品秘钥" prop="mqttSecret">
-                                <el-input v-model="form.mqttSecret" placeholder="自动生成"
-                                    :disabled="!form.mqttAccount || form.deviceType == 3" readonly :type="keyInputType">
-                                    <el-button slot="append" icon="el-icon-view" style="font-size:18px;"
-                                        @click="changeInputType('key')"></el-button>
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
-                            <el-form-item label="产品图片">
-                                <div v-if="form.status == 2 && form.imgUrl == null">
-                                    <el-image style="height:145px;height:145px;border-radius:10px;"
-                                        :preview-src-list="[require('@/assets/images/gateway.png')]"
-                                        :src="require('@/assets/images/gateway.png')" fit="cover"
-                                        v-if="form.deviceType == 2"></el-image>
-                                    <el-image style="height:145px;height:145px;border-radius:10px;"
-                                        :preview-src-list="[require('@/assets/images/video.png')]"
-                                        :src="require('@/assets/images/video.png')" fit="cover"
-                                        v-else-if="form.deviceType == 3"></el-image>
-                                    <el-image style="height:145px;height:145px;border-radius:10px;"
-                                        :preview-src-list="[require('@/assets/images/product.png')]"
-                                        :src="require('@/assets/images/product.png')" fit="cover" v-else></el-image>
-                                </div>
-                                <div v-else>
-                                    <imageUpload ref="image-upload" :disabled="true" :value="form.imgUrl"
-                                        :limit="form.status == 2 ? 0 : 1" :fileSize="1" @input="getImagePath($event)">
-                                    </imageUpload>
-                                </div>
-                                <div class="el-upload__tip" style="color:#f56c6c"
-                                    v-if="form.productId == null || form.productId == 0">提示：上传后需要提交保存</div>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                    </el-form>
+                </el-tab-pane>
 
-                    <el-col :span="20">
-                        <el-form-item style="text-align: center;margin:40px 0px;">
-                            <el-button type="primary" @click="submitForm" v-hasPermi="['iot:product:edit']"
-                                v-show="form.productId != 0 && form.status != 2">修 改</el-button>
-                            <el-button type="primary" @click="submitForm" v-hasPermi="['iot:product:add']"
-                                v-show="form.productId == 0 && form.status != 2">新 增</el-button>
-                        </el-form-item>
-                    </el-col>
-                </el-form>
-            </el-tab-pane>
+                <el-tab-pane class="pane-item" label="" name="things" :disabled="form.productId == 0">
+                    <span slot="label"><span style="color:red;">* </span>产品模型</span>
+                    <product-things-model ref="productThingsModel" :product="form" />
+                </el-tab-pane>
+				
+				<el-tab-pane class="pane-item" label="" name="fixed" :disabled="form.productId == 0">
+					<span slot="label"><span style="color:red;">* </span>固件管理</span>
+					<product-fixed ref="productFixed" :product="form"></product-fixed>
+				</el-tab-pane>
 
-            <el-tab-pane label="" name="things" :disabled="form.productId == 0">
-                <span slot="label"><span style="color:red;">* </span>产品模型</span>
-                <product-things-model ref="productThingsModel" :product="form" />
-            </el-tab-pane>
+                <el-tab-pane class="pane-item" label="" name="productAuthorize" :disabled="form.productId == 0" v-if="form.deviceType !== 3">
+                    <span slot="label">设备授权</span>
+                    <product-authorize ref="productAuthorize" :product="form" />
+                </el-tab-pane>
 
-            <el-tab-pane label="" name="productAuthorize" :disabled="form.productId == 0" v-if="form.deviceType !== 3">
-                <span slot="label">设备授权</span>
-                <product-authorize ref="productAuthorize" :product="form" />
-            </el-tab-pane>
+                <el-tab-pane class="pane-item" label="" name="sipConfig" :disabled="form.productId == 0" v-if="form.deviceType === 3">
+                    <span slot="label">SIP配置</span>
+                    <config-sip ref="configSip" :product="form" />
+                </el-tab-pane>
 
-            <el-tab-pane label="" name="sipConfig" :disabled="form.productId == 0" v-if="form.deviceType === 3">
-                <span slot="label">SIP配置</span>
-                <config-sip ref="configSip" :product="form" />
-            </el-tab-pane>
-
-            <div style="margin-top: 200px"></div>
+                <div style="margin-top: 200px"></div>
 
 
-            <div style="margin-top:200px;"></div>
+                <div style="margin-top:200px;"></div>
 
-            <!-- 用于设置间距 -->
-            <el-tab-pane>
-                <span slot="label">
-                    <div style="margin-top:200px;"></div>
-                </span>
-            </el-tab-pane>
-
-            <el-tab-pane v-if="form.status == 1" name="product04" disabled>
-                <span slot="label">
-                    <el-button type="success" size="mini" @click="changeProductStatus(2)"
-                        v-hasPermi="['iot:product:add']">发布产品</el-button>
-                </span>
-            </el-tab-pane>
-            <el-tab-pane v-if="form.status == 2" name="product05" disabled>
-                <span slot="label">
-                    <el-button type="danger" size="mini" @click="changeProductStatus(1)"
-                        v-hasPermi="['iot:product:edit']">取消发布</el-button>
-                </span>
-            </el-tab-pane>
-            <el-tab-pane name="product06" disabled>
-                <span slot="label">
-                    <el-button type="info" size="mini" @click="goBack()">返回列表</el-button>
-                </span>
-            </el-tab-pane>
-        </el-tabs>
-
-    </el-card>
+                <!-- 用于设置间距 -->
+                <el-tab-pane>
+                    <span slot="label">
+                        <div style="margin-top:200px;"></div>
+                    </span>
+                </el-tab-pane>
+            </el-tabs>
+        </el-card>
+    </div>
 </template>
 
 <script>
 import productThingsModel from "./product-things-model";
+import productFixed from "./product-fixed.vue";
 import productApp from "./product-app";
 import productAuthorize from "./product-authorize";
 import imageUpload from "../../../components/ImageUpload/index";
@@ -206,6 +216,7 @@ export default {
     dicts: ['iot_device_type', 'iot_network_method', 'iot_vertificate_method', 'iot_transport_type', 'data_collect_type'],
     components: {
         productThingsModel,
+		productFixed,
         productApp,
         productAuthorize,
         imageUpload,
@@ -560,5 +571,81 @@ export default {
     padding: 0 10px;
     background-color: #fff;
     color: #333;
+}
+
+.pane-item {
+    margin-top: 10px;
+}
+.product-edit {
+    padding: 20px
+}
+
+.product-edit .top-card {
+    margin-bottom: 10px
+}
+
+.product-edit .top-card .title-wrap {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center
+}
+
+.product-edit .top-card .title-wrap .top-button {
+    height: 22px;
+    color: #909399;
+    background: #f4f5f7;
+    padding: 0 8px;
+    border: none
+}
+
+.product-edit .top-card .title-wrap .info-item {
+    font-weight: 400;
+    font-size: 14px;
+    color: #333;
+    line-height: 20px;
+    margin-left: 36px
+}
+
+.product-edit .custom-tabs .basic-span {
+    margin-top: 16px
+}
+
+.product-edit .custom-tabs .el-card__body {
+    padding: 0 20px
+}
+
+.product-edit .custom-tabs .el-tabs__active-bar {
+    background-color: transparent
+}
+
+.product-edit .custom-tabs .el-tabs__nav {
+    margin-bottom: 12px
+}
+
+.product-edit .custom-tabs .el-tabs__item {
+    padding: 0 25px!important;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    display: inline-block;
+    list-style: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #303133;
+    position: relative
+}
+
+.product-edit .custom-tabs .el-tabs__item.is-active {
+    color: #fff;
+    background-color: #486ff2;
+    border-radius: 4px;
+    height: 32px;
+    line-height: 34px
 }
 </style>

@@ -1,14 +1,14 @@
 <template>
-<div style="padding:6px;">
-    <el-card style="margin-bottom:5px;">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px" style="margin-bottom:-20px;">
-            <el-form-item label="产品名称" prop="productName">
+<div class="iot-product">
+    <el-card class="card-search" shadow="never">
+        <el-form :model="queryParams" ref="queryForm" :inline="true" style="margin-bottom:-20px;">
+            <el-form-item label="" prop="productName">
                 <el-input v-model="queryParams.productName" placeholder="请输入产品名称" clearable size="small" @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="分类名称" prop="categoryName">
+            <el-form-item label="" prop="categoryName">
                 <el-input v-model="queryParams.categoryName" placeholder="请输入产品分类名称" clearable size="small" @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="状态" prop="status">
+            <el-form-item label="" prop="status">
                 <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
                     <el-option v-for="dict in dict.type.iot_product_status" :key="dict.value" :label="dict.label" :value="dict.value" />
                 </el-select>
@@ -22,59 +22,83 @@
             </el-form-item>
         </el-form>
     </el-card>
-    <el-card style="padding-bottom:100px;">
-        <el-row :gutter="30" v-loading="loading">
-            <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="6" v-for="(item,index) in productList" :key="index" style="margin-bottom:30px;text-align:center;">
-                <el-card :body-style="{ padding: '20px'}" shadow="always" class="card-item">
-                    <el-row type="flex" :gutter="10" justify="space-between">
-                        <el-col :span="20" style="text-align:left;">
-                            <el-link type="" :underline="false" @click="handleEditProduct(item)" style="font-weight:bold;font-size:16px;line-height:32px;white-space:nowrap;">
-                                <svg-icon icon-class="product" /> {{item.productName}}
-                                <el-tag type="info" size="mini" style="margin-left:5px;font-weight:200" v-if="item.isSys==1">系统</el-tag>
-                            </el-link>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-tooltip class="item" effect="dark" content="取消发布" placement="top-start" v-if="item.status==2">
-                                <el-button type="success" size="mini" style="padding:5px;" @click="changeProductStatus(item.productId,1,item.deviceType)">已发布</el-button>
+    <el-card>
+        <el-row :gutter="20" v-loading="loading">
+            <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="6" v-for="(item,index) in productList" :key="index" style="margin-bottom:20px;text-align:center;">
+                <el-card :body-style="{ padding: '0'}" shadow="never" class="card-item">
+                    <div class="item-title">
+                        <div>
+                            <el-image class="img" :preview-src-list="[baseUrl+item.imgUrl]" :src="baseUrl+item.imgUrl" fit="cover" v-if="item.imgUrl!=null && item.imgUrl!=''"></el-image>
+                            <el-image class="img" :preview-src-list="[require('@/assets/images/gateway.png')]" :src="require('@/assets/images/gateway.png')" fit="cover" v-else-if="item.deviceType==2"></el-image>
+                            <el-image class="img" :preview-src-list="[require('@/assets/images/video.png')]" :src="require('@/assets/images/video.png')" fit="cover" v-else-if="item.deviceType==3"></el-image>
+                            <el-image class="img" :preview-src-list="[require('@/assets/images/product.png')]" :src="require('@/assets/images/product.png')" fit="cover" v-else></el-image>
+                        </div>
+                        <div class="title" @click="handleEditProduct(item)">
+                            <div class="name">{{item.productName}}</div>
+                            <div class="tag">
+                                <el-tag type="info" size="mini" effect="light">admin</el-tag>
+                            </div>
+                        </div>
+                        <div style="width: 45px;"></div>
+                        <div class="status">
+                            <el-tooltip effect="dark" content="取消发布" placement="top-start" v-if="item.status==2">
+                                <el-button size="mini" plain class="btn-published" @click="changeProductStatus(item.productId,1,item.deviceType)">
+                                    <svg-icon :icon-class="icons[0]" />
+                                    已发布
+                                </el-button>
                             </el-tooltip>
-                            <el-tooltip class="item" effect="dark" content="现在发布" placement="top-start" v-if="item.status==1">
-                                <el-button type="info" size="mini" style="padding:5px;" @click="changeProductStatus(item.productId,2,item.deviceType)">未发布</el-button>
+
+                            <el-tooltip effect="dark" content="现在发布" placement="top-start" v-if="item.status==1">
+                                <el-button type="info" size="mini" class="btn-unpublished item" @click="changeProductStatus(item.productId,2,item.deviceType)">
+                                    <svg-icon :icon-class="icons[1]" />
+                                    未发布
+                                </el-button>
                             </el-tooltip>
-                        </el-col>
-                    </el-row>
+                        </div>
+                    </div>
                     <el-row :gutter="10">
-                        <el-col :span="14">
-                            <el-descriptions :column="1" size="small" style="margin-top:10px;white-space:nowrap;">
+                        <el-col :span="12" class="card-item-desc" style="padding-left: 24px; padding-right: 5px;">
+                            <el-descriptions class="card-item-desc-item" :column="1" size="small">
                                 <el-descriptions-item label="所属分类">
-                                    <el-link type="primary" :underline="false">{{item.categoryName}}</el-link>
-                                </el-descriptions-item>
-                                <el-descriptions-item label="产品类型">
-                                    <dict-tag :options="dict.type.iot_device_type" :value="item.deviceType" />
-                                </el-descriptions-item>
-                                <el-descriptions-item label="联网方式">
-                                    <dict-tag :options="dict.type.iot_network_method" :value="item.networkMethod" />
-                                </el-descriptions-item>
-                                <el-descriptions-item label="设备授权">
-                                    <el-tag type="success" size="mini" v-if="item.isAuthorize==1">已启用</el-tag>
-                                    <el-tag type="info" size="mini" v-else>未启用</el-tag>
+                                    <el-link class="product-category" type="primary" :underline="false">{{item.categoryName}}</el-link>
                                 </el-descriptions-item>
                             </el-descriptions>
                         </el-col>
-                        <el-col :span="10">
-                            <div style="margin-top:10px;">
-                                <el-image style="width:100%;height:100px;border-radius:10px;" lazy :preview-src-list="[baseUrl+item.imgUrl]" :src="baseUrl+item.imgUrl" fit="cover" v-if="item.imgUrl!=null && item.imgUrl!=''"></el-image>
-                                <el-image style="width:100%;height:100px;border-radius:10px;" :preview-src-list="[require('@/assets/images/gateway.png')]" :src="require('@/assets/images/gateway.png')" fit="cover" v-else-if="item.deviceType==2"></el-image>
-                                <el-image style="width:100%;height:100px;border-radius:10px;" :preview-src-list="[require('@/assets/images/video.png')]" :src="require('@/assets/images/video.png')" fit="cover" v-else-if="item.deviceType==3"></el-image>
-                                <el-image style="width:100%;height:100px;border-radius:10px;" :preview-src-list="[require('@/assets/images/product.png')]" :src="require('@/assets/images/product.png')" fit="cover" v-else></el-image>
-                            </div>
+                        <el-col :span="12" class="card-item-desc" style="padding-left: 5px; padding-right: 24px;">
+                            <el-descriptions class="card-item-desc-item" :column="1" size="small">
+                                <el-descriptions-item label="联网方式">
+                                    <dict-tag :options="dict.type.iot_network_method" :value="item.networkMethod" />
+                                </el-descriptions-item>
+                            </el-descriptions>
                         </el-col>
                     </el-row>
-                    <el-button-group style="margin-top:15px;height:28px;">
-                        <el-button size="mini" type="primary" icon="el-icon-view" @click="handleEditProduct(item)" v-hasPermi="['iot:product:query']">详情</el-button>
-                        <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(item)" v-hasPermi="['iot:product:remove']" v-if="item.status==1">删除</el-button>
-                        <el-button size="mini" type="success" icon="el-icon-s-check" @click="handleDeviceAuthorize(item)" v-hasPermi="['iot:product:edit']" v-if="item.status==2" :disabled="item.isAuthorize!=1">设备授权</el-button>
-                        <el-button size="mini" type="warning" icon="el-icon-search" @click="handleViewDevice(item.productId)" v-hasPermi="['iot:device:query']">查看设备</el-button>
-                    </el-button-group>
+                    <el-row :gutter="10">
+                        <el-col :span="12" class="card-item-desc" style="padding-left: 24px; padding-right: 5px;">
+                            <el-descriptions class="card-item-desc-item" :column="1" size="small">
+                                <el-descriptions-item label="产品类型">
+                                    <dict-tag :options="dict.type.iot_device_type" :value="item.deviceType" />
+                                </el-descriptions-item>
+                            </el-descriptions>
+                        </el-col>
+                        <el-col :span="12" class="card-item-desc" style="padding-left: 5px; padding-right: 24px;">
+                            <el-descriptions class="card-item-desc-item" :column="1" size="small">
+                                <el-descriptions-item label="设备授权">
+                                    <el-tag type="success" size="mini" v-if="item.isAuthorize==1">已启用</el-tag>
+                                    <el-tag style="color: rgb(192, 196, 204);border-radius: 2px;border: 1px solid rgb(192, 196, 204);background-color: rgb(255, 255, 255);" size="mini" v-else>未启用</el-tag>
+                                </el-descriptions-item>
+                            </el-descriptions>
+                        </el-col>
+                    </el-row>
+                    <el-divider class="divider"></el-divider>
+                    <div class="card-item-btns">
+                        <el-button size="mini" type="text" @click="handleEditProduct(item)" v-hasPermi="['iot:product:query']">详情</el-button>
+                        <span class="btn-item-line">|</span>
+                        <el-button size="mini" type="text" @click="handleDelete(item)" v-hasPermi="['iot:product:remove']" v-if="item.status==1">删除</el-button>
+                        <span class="btn-item-line" v-if="item.status==1">|</span>
+                        <el-button size="mini" type="text" @click="handleDeviceAuthorize(item)" v-hasPermi="['iot:product:edit']" v-if="item.status==2" :disabled="item.isAuthorize!=1">设备授权</el-button>
+                        <span class="btn-item-line" v-if="item.status==2">|</span>
+                        <el-button size="mini" type="text" @click="handleViewDevice(item.productId)" v-hasPermi="['iot:device:query']">查看设备</el-button>
+                    </div>
                 </el-card>
             </el-col>
         </el-row>
@@ -146,6 +170,7 @@ export default {
             // 表单参数
             form: {},
             baseUrl: process.env.VUE_APP_BASE_API,
+            icons: ['check', 'exclamation']
         };
     },
     created() {
@@ -296,7 +321,120 @@ export default {
 </script>
 
 <style scoped>
-.card-item {
-    border-radius: 15px;
+.iot-product {
+	padding: 20px
+}
+.iot-product .card-search {
+	margin-bottom: 15px;
+	width: 100%;
+	border-radius: 8px
+}
+.iot-product .card-item {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+}
+.iot-product .card-item .item-title {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    position: relative;
+    padding: 18px
+}
+.iot-product .card-item .item-title .img {
+    height: 58px;
+    width: 58px;
+    border-radius: 10px
+}
+.iot-product .card-item .item-title .title {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    text-align: left;
+    margin-left: 16px
+}
+.iot-product .card-item .item-title .title .name {
+    font-weight: 500;
+    font-size: 16px;
+    color: #303133;
+    line-height: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer
+}
+.iot-product .card-item .item-title .title .tag {
+    margin-top: 5px
+}
+.iot-product .card-item .item-title .title .tag span {
+    font-weight: 200;
+    border-radius: 2px;
+    border: 1px solid #c0c4cc;
+    background: #fff
+}
+.iot-product .card-item .item-title .status {
+    position: absolute;
+    right: -1px;
+    top: 24px
+}
+.iot-product .card-item .item-title .status .btn-published {
+    padding: 3px!important;
+    background: rgba(103,194,58,.2);
+    color: #67c23a;
+    border-radius: 2px 0 0 2px
+}
+.iot-product .card-item .item-title .status .is-plain:hover {
+    border-color: transparent!important
+}
+.iot-product .card-item .item-title .status .is-plain:active, .iot-product .card-item .item-title .status .is-plain:focus {
+    color: #67c23a;
+    border-color: rgba(103,194,58,.2);
+}
+.iot-product .card-item .item-title .status .btn-unpublished {
+    padding: 3px!important;
+    background: rgba(192,196,204,.2);
+    color: #c0c4cc;
+    border-radius: 2px 0 0 2px;
+    border: 1px solid #c0c4cc
+}
+.iot-product .card-item .card-item-desc .card-item-desc-item {
+    white-space: nowrap;
+}
+.iot-product .card-item .product-category {
+    font-family: PingFangSC,PingFang SC;
+    font-weight: 400;
+    font-size: 13px;
+    color: #486ff2;
+    line-height: 18px;
+    text-align: left;
+    font-style: normal
+}
+.iot-product .card-item .divider {
+    margin: 10px 0 0;
+    height: 1px;
+    background: #dcdfe6
+}
+.iot-product .card-item .card-item-btns {
+    height: 40px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-size: 12px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: space-evenly;
+    -ms-flex-pack: space-evenly;
+    justify-content: space-evenly
+}
+.iot-product .card-item .card-item-btns .btn-item-line {
+    width: 1px;
+    font-size: 16px;
+    color: #dcdfe6
 }
 </style>

@@ -2,10 +2,10 @@
   <div style="padding-left: 20px">
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-share" size="mini" @click="shareDevice" v-hasPermi="['iot:device:share']">分享设备</el-button>
+        <el-button type="primary" plain icon="el-icon-share" size="small" @click="shareDevice" v-hasPermi="['iot:device:share']">分享设备</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="el-icon-refresh" size="mini" @click="getList">刷新</el-button>
+        <el-button type="warning" plain icon="el-icon-refresh" size="small" @click="getList">刷新</el-button>
       </el-col>
     </el-row>
 

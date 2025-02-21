@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-left: 20px">
+  <div>
     <el-form :inline="true" label-width="100px">
       <el-form-item label="监测间隔(ms)">
         <el-tooltip class="item" effect="light" content="取值范围500-10000毫秒" placement="top">
@@ -12,8 +12,8 @@
         </el-tooltip>
       </el-form-item>
       <el-form-item>
-        <el-button type="success" icon="el-icon-video-play" size="mini" @click="beginMonitor()" style="margin-left: 30px">开始监测</el-button>
-        <el-button type="danger" icon="el-icon-video-pause" size="mini" @click="stopMonitor()">停止监测</el-button>
+        <el-button type="primary" icon="el-icon-video-play" size="small" @click="beginMonitor()" style="margin-left: 30px">开始监测</el-button>
+        <el-button type="default" icon="el-icon-video-pause" size="small" @click="stopMonitor()">停止监测</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="20" v-loading="chartLoading" element-loading-text="正在接收设备数据，请耐心等待......" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
@@ -38,10 +38,11 @@ export default {
   watch: {
     // 获取到父组件传递的device后，刷新列表
     device: function (newVal, oldVal) {
+			console.log(newVal, 'newVal-实时监测')
       this.deviceInfo = newVal;
       if (this.deviceInfo && this.deviceInfo.deviceId != 0) {
-        // 监测数据
-        this.monitorThings = this.deviceInfo.monitorList;
+        // 监测数据 this.deviceInfo.monitorList
+        this.monitorThings = this.deviceInfo.chartList;
         // 监测数据集合初始化
         this.dataList = [];
         for (let i = 0; i < this.monitorThings.length; i++) {
@@ -224,8 +225,7 @@ export default {
         // 设置宽度
         this.$refs.monitor[i].style.width = document.documentElement.clientWidth / 2 - 255 + 'px';
         this.chart[i] = this.$echarts.init(this.$refs.monitor[i]);
-        var option;
-        option = {
+        let option = {
           title: {
             left: 'center',
             text: this.monitorThings[i].name + ' （单位 ' + (this.monitorThings[i].datatype.unit != undefined ? this.monitorThings[i].datatype.unit : '无') + '）',
@@ -252,6 +252,7 @@ export default {
             splitLine: {
               show: false,
             },
+						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
           },
           yAxis: {
             type: 'value',
@@ -270,7 +271,7 @@ export default {
                 color: i > 9 ? color[0] : color[i],
               },
               areaStyle: {},
-              data: [],
+							data: [820, 932, 901, 934, 1290, 1330, 1320]
             },
           ],
         };

@@ -1,225 +1,240 @@
 <template>
-    <el-card style="margin: 6px; padding-bottom: 100px">
-        <el-tabs v-model="activeName" tab-position="left" @tab-click="tabChange" style="padding: 10px; min-height: 400px">
-            <el-tab-pane name="basic">
-                <span slot="label">* 基本信息</span>
-                <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-                    <el-row :gutter="100">
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
-                            <el-form-item label="设备名称" prop="deviceName">
-                                <el-input v-model="form.deviceName" placeholder="请输入设备名称">
-                                    <el-button slot="append" @click="openSummaryDialog" v-if="form.deviceId != 0">摘要</el-button>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="" prop="productName">
-                                <template slot="label">
-                                    <span style="color: red">*</span>
-                                    所属产品
-                                </template>
-                                <el-input readonly v-model="form.productName" placeholder="请选择产品" :disabled="form.status != 1">
-                                    <el-button slot="append" @click="selectProduct()" :disabled="form.status != 1">选择</el-button>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="" prop="serialNumber">
-                                <template slot="label">
-                                    <span style="color: red">*</span>
-                                    设备编号
-                                </template>
-                                <el-input v-model="form.serialNumber" placeholder="请输入设备编号" :disabled="form.status !== 1" maxlength="32">
-                                    <!-- <el-button slot="append" @click="generateNum" :loading="genDisabled"
-                    :disabled="form.status !== 1">生成</el-button> -->
-                                    <el-button v-if="form.deviceType !== 3" slot="append" @click="generateNum" :loading="genDisabled" :disabled="form.status != 1" v-hasPermi="['iot:device:add']">生成</el-button>
-                                    <el-button v-if="form.deviceType === 3" slot="append" @click="genSipID()" :disabled="form.status != 1" v-hasPermi="['iot:device:add']">生成</el-button>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item v-if="openServerTip">
-                                <template>
-                                    <el-alert type="info" show-icon description="当前选择TCP协议,设备编号生成为HEX格式"></el-alert>
-                                </template>
-                            </el-form-item>
-                            <el-form-item v-if="openTip">
-                                <template>
-                                    <el-alert type="success" show-icon description="当前选择的产品属于modbus协议,将在网关设备创建后根据采集点模板生成子设备"></el-alert>
-                                </template>
-                            </el-form-item>
-                            <el-form-item label="固件版本" prop="firmwareVersion">
-                                <el-input v-model="form.firmwareVersion" placeholder="请输入固件版本" type="number" step="0.1" :disabled="form.status != 1 || form.deviceType === 3">
-                                    <template slot="prepend">Version</template>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="模拟设备" prop="isSimulate">
-                                <el-switch v-model="form.isSimulate" active-text="" inactive-text="" :active-value="1" :inactive-value="0" :disabled="form.deviceType === 3"></el-switch>
-                            </el-form-item>
-                            <el-form-item label="设备影子" prop="isShadow">
-                                <el-switch v-model="form.isShadow" active-text="" inactive-text="" :active-value="1" :inactive-value="0" :disabled="form.deviceType === 3"></el-switch>
-                            </el-form-item>
-                            <el-form-item label="禁用设备" prop="deviceStatus">
-                                <el-switch
-                                    v-model="deviceStatus"
-                                    active-text=""
-                                    inactive-text=""
-                                    :disabled="form.status === 1 || form.deviceType === 3"
-                                    :active-value="1"
-                                    :inactive-value="0"
-                                    active-color="#F56C6C"
-                                ></el-switch>
-                            </el-form-item>
-                            <el-form-item label="备注信息" prop="remark">
-                                <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" rows="1" />
-                            </el-form-item>
-                        </el-col>
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
-                            <el-form-item label="定位方式" prop="locationWay">
-                                <el-select v-model="form.locationWay" placeholder="请选择设备状态" clearable size="small" style="width: 100%" :disabled="form.deviceType === 3">
-                                    <el-option v-for="dict in dict.type.iot_location_way" :key="dict.value" :label="dict.label" :value="Number(dict.value)" />
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="设备经度" prop="longitude">
-                                <el-input v-model="form.longitude" placeholder="请输入设备经度" type="number" :disabled="form.locationWay != 3">
-                                    <el-link slot="append" :underline="false" href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" :disabled="form.locationWay != 3">坐标拾取</el-link>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="设备纬度" prop="latitude">
-                                <el-input v-model="form.latitude" placeholder="请输入设备纬度" type="number" :disabled="form.locationWay != 3">
-                                    <el-link slot="append" :underline="false" href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" :disabled="form.locationWay != 3">坐标拾取</el-link>
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="所在地址" prop="networkAddress">
-                                <el-input v-model="form.networkAddress" placeholder="请输入设备所在地址" :disabled="form.locationWay != 3" />
-                            </el-form-item>
-                            <el-form-item label="入网地址" prop="networkIp">
-                                <el-input v-model="form.networkIp" placeholder="设备入网IP" disabled />
-                            </el-form-item>
-                            <el-form-item label="激活时间" prop="activeTime">
-                                <el-date-picker clearable v-model="form.activeTime" type="date" value-format="yyyy-MM-dd" placeholder="设备激活时间" disabled style="width: 100%"></el-date-picker>
-                            </el-form-item>
-                            <el-form-item label="设备信号" prop="rssi">
-                                <el-input v-model="form.rssi" placeholder="设备信号强度" disabled />
-                            </el-form-item>
-                            <el-form-item label="其他信息" prop="remark" v-if="form.deviceId != 0">
-                                <dict-tag :options="dict.type.iot_device_status" :value="form.status" style="display: inline-block; margin-right: 8px" />
-                                <el-button size="small" @click="handleViewMqtt()">认证信息</el-button>
-                                <el-button size="small" @click="openCodeDialog()">二维码</el-button>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8" v-if="form.deviceId != 0">
-                            <div style="border: 1px solid #dfe4ed; border-radius: 5px; padding: 5px; text-align: center; line-height: 400px">
-                                <div id="map" style="height: 435px; width: 100%">地图展示区域，新增后显示</div>
-                            </div>
-                        </el-col>
-                    </el-row>
-                </el-form>
-
-                <el-form label-width="100px" style="margin-top: 50px">
-                    <el-form-item style="text-align: center; margin-left: -100px; margin-top: 10px">
-                        <el-button type="primary" @click="submitForm" v-hasPermi="['iot:device:edit']" v-show="form.deviceId != 0">修 改</el-button>
-                        <el-button type="primary" @click="submitForm" v-hasPermi="['iot:device:add']" v-show="form.deviceId == 0">新 增</el-button>
-                    </el-form-item>
-                </el-form>
-
-                <!-- 选择产品 -->
-                <product-list ref="productList" :productId="form.productId" @productEvent="getProductData($event)" />
-
-                <sipid ref="sipidGen" :product="form" @addGenEvent="getSipIDData($event)" />
-            </el-tab-pane>
-
-            <el-tab-pane name="runningStatus" v-if="form.deviceType !== 3 && !isSubDev">
-                <span slot="label">运行状态</span>
-                <running-status ref="runningStatus" :device="form" @statusEvent="getDeviceStatusData($event)"/>
-              </el-tab-pane>
-
-            <!-- <el-tab-pane :disabled="form.deviceId === 0" v-if="form.deviceType === 3" name="sipPlayer">
-        <span slot="label"><span style="color:red;">￥ </span>设备直播</span>
-        <business ref="business"/>
-      </el-tab-pane> -->
-            <el-tab-pane name="videoLive" :disabled="form.deviceId == 0" v-if="form.deviceType === 3">
-                <span slot="label">设备直播</span>
-                <device-live-stream ref="deviceLiveStream" :device="form" />
-            </el-tab-pane>
-
-            <el-tab-pane name="deviceTimer" :disabled="form.deviceId === 0" v-if="form.deviceType !== 3 && hasShrarePerm('timer')">
-                <span slot="label">设备定时</span>
-                <device-timer ref="deviceTimer" :device="form" />
-            </el-tab-pane>
-
-            <el-tab-pane name="deviceUser" :disabled="form.deviceId == 0">
-                <span slot="label">设备用户</span>
-                <device-user ref="deviceUser" :device="form" @userEvent="getUserData($event)" />
-            </el-tab-pane>
-
-            <el-tab-pane name="deviceLog" :disabled="form.deviceId == 0 && hasShrarePerm('log')" lazy>
-                <span slot="label">事件日志</span>
-                <device-log ref="deviceLog" :device="form" />
-            </el-tab-pane>
-
-            <el-tab-pane name="deviceFuncLog" :disabled="form.deviceId == 0" v-if="form.deviceType !== 3 && hasShrarePerm('log')" lazy>
-                <span slot="label">指令日志</span>
-                <device-func ref="deviceFuncLog" :device="form" />
-            </el-tab-pane>
-
-            <!-- 用于设置间距 -->
-            <el-tab-pane disabled>
-                <span slot="label">
-                    <div style="margin-top: 350px"></div>
-                </span>
-            </el-tab-pane>
-
-            <el-tab-pane name="deviceReturn" disabled>
-                <span slot="label">
-                    <el-button type="info" size="mini" @click="goBack()">返回列表</el-button>
-                </span>
-            </el-tab-pane>
-        </el-tabs>
-
-        <!-- 设备配置JSON -->
-        <el-dialog title="摘要（设备上传的只读数据）" :visible.sync="openSummary" width="700px" append-to-body>
-            <el-row :gutter="20">
-                <el-col :span="14">
-                    <div style="border: 1px solid #ccc; margin-top: -15px; height: 350px; width: 360px; overflow: scroll">
-                        <json-viewer :value="summary" :expand-depth="10" copyable>
-                            <template v-slot:copy>复制</template>
-                        </json-viewer>
-                    </div>
-                </el-col>
-                <el-col :span="10">
-                    <div style="border: 1px solid #ccc; width: 200px; text-align: center; margin-left: 20px; margin-top: -10px">
-                        <vue-qr :text="qrText" :size="200"></vue-qr>
-                        <div style="padding-bottom: 10px">设备二维码</div>
-                    </div>
-                </el-col>
-            </el-row>
-            <div slot="footer" class="dialog-footer">
-                <el-button type="info" @click="closeSummaryDialog">关 闭</el-button>
-            </div>
-        </el-dialog>
-        <!-- 二维码 -->
-        <el-dialog :visible.sync="openCode" width="300px" append-to-body>
-            <div style="border: 1px solid #ccc; width: 220px; text-align: center; margin: 0 auto; margin-top: -15px">
-                <vue-qr :text="qrText" :size="200"></vue-qr>
-                <div style="padding-bottom: 10px">设备二维码</div>
-            </div>
-        </el-dialog>
-        <el-dialog title="Mqtt连接参数" :visible.sync="openViewMqtt" width="600px" append-to-body>
-            <el-form ref="listQuery" :model="listQuery" :rules="rules" label-width="150px">
-                <el-form-item label="clientId" prop="clientId">
-                    <el-input v-model="listQuery.clientId" disabled style="width: 80%" />
-                </el-form-item>
-                <el-form-item label="username" prop="username">
-                    <el-input v-model="listQuery.username" disabled style="width: 80%" />
-                </el-form-item>
-                <el-form-item label="passwd" prop="passwd">
-                    <el-input clearable v-model="listQuery.passwd" disabled style="width: 80%"></el-input>
-                </el-form-item>
-                <el-form-item label="port" prop="port">
-                    <el-input clearable v-model="listQuery.port" disabled style="width: 80%"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button class="btns" type="primary" @click="doCopy(2)">一键复制</el-button>
-                <el-button @click="closeSummaryDialog">关 闭</el-button>
-            </div>
-        </el-dialog>
-    </el-card>
+	<div class="product-edit">
+		<el-card class="top-card" :body-style="{ padding: '26px 20px' }">
+			<div class="title-wrap">
+				<el-button class="top-button" type="info" size="small" icon="el-icon-arrow-left" @click="goBack()">返回</el-button>
+				<span class="info-item">设备名称：{{ form.deviceName }}</span>
+				<span class="info-item">设备编号：{{ form.serialNumber }}</span>
+				<span class="info-item">在线状态：
+					<dict-tag :options="dict.type.iot_device_status" :value="form.status" list-class="text" style="display: inline-block; margin-right: 8px" />
+				</span>
+				<span class="info-item">所属产品：{{ form.productName }}</span>
+			</div>
+		</el-card>
+		
+		<el-card style="padding-bottom:100px;">
+			<el-tabs v-model="activeName" tab-position="top" style="padding: 0 10px; margin-top: -10px;"  @tab-click="tabChange">
+				<el-tab-pane class="pane-item" name="basic">
+					<span slot="label"><span style="color:red;">* </span>基本信息</span>
+					<el-form ref="form" :model="form" :rules="rules" label-width="100px">
+						<el-row :gutter="100">
+							<el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
+								<el-form-item label="设备名称" prop="deviceName">
+									<el-input v-model="form.deviceName" placeholder="请输入设备名称">
+										<el-button slot="append" @click="openSummaryDialog" v-if="form.deviceId != 0">摘要</el-button>
+									</el-input>
+								</el-form-item>
+								<el-form-item label="" prop="productName">
+									<template slot="label">
+										<span style="color: red">*</span>
+										所属产品
+									</template>
+									<el-input readonly v-model="form.productName" placeholder="请选择产品" :disabled="form.status != 1">
+										<el-button slot="append" @click="selectProduct()" :disabled="form.status != 1">选择</el-button>
+									</el-input>
+								</el-form-item>
+								<el-form-item label="" prop="serialNumber">
+									<template slot="label">
+										<span style="color: red">*</span>
+										设备编号
+									</template>
+									<el-input v-model="form.serialNumber" placeholder="请输入设备编号" :disabled="form.status !== 1" maxlength="32">
+										<!-- <el-button slot="append" @click="generateNum" :loading="genDisabled"
+						:disabled="form.status !== 1">生成</el-button> -->
+										<el-button v-if="form.deviceType !== 3" slot="append" @click="generateNum" :loading="genDisabled" :disabled="form.status != 1" v-hasPermi="['iot:device:add']">生成</el-button>
+										<el-button v-if="form.deviceType === 3" slot="append" @click="genSipID()" :disabled="form.status != 1" v-hasPermi="['iot:device:add']">生成</el-button>
+									</el-input>
+								</el-form-item>
+								<el-form-item v-if="openServerTip">
+									<template>
+										<el-alert type="info" show-icon description="当前选择TCP协议,设备编号生成为HEX格式"></el-alert>
+									</template>
+								</el-form-item>
+								<el-form-item v-if="openTip">
+									<template>
+										<el-alert type="success" show-icon description="当前选择的产品属于modbus协议,将在网关设备创建后根据采集点模板生成子设备"></el-alert>
+									</template>
+								</el-form-item>
+								<el-form-item label="固件版本" prop="firmwareVersion">
+									<el-input v-model="form.firmwareVersion" placeholder="请输入固件版本" type="number" step="0.1" :disabled="form.status != 1 || form.deviceType === 3">
+										<template slot="prepend">Version</template>
+									</el-input>
+								</el-form-item>
+								<el-form-item label="所属站点" prop="locationWay">
+									<el-select v-model="form.locationWay" placeholder="请选择所属站点" clearable size="small" style="width: 100%" :disabled="form.deviceType === 3">
+										<el-option v-for="dict in dict.type.iot_location_way" :key="dict.value" :label="dict.label" :value="Number(dict.value)" />
+									</el-select>
+								</el-form-item>
+								<el-form-item label="模拟设备" prop="isSimulate">
+									<el-switch v-model="form.isSimulate" active-text="" inactive-text="" :active-value="1" :inactive-value="0" :disabled="form.deviceType === 3"></el-switch>
+								</el-form-item>
+								<el-form-item label="设备影子" prop="isShadow">
+									<el-switch v-model="form.isShadow" active-text="" inactive-text="" :active-value="1" :inactive-value="0" :disabled="form.deviceType === 3"></el-switch>
+								</el-form-item>
+								<el-form-item label="禁用设备" prop="deviceStatus">
+									<el-switch
+										v-model="deviceStatus"
+										active-text=""
+										inactive-text=""
+										:disabled="form.status === 1 || form.deviceType === 3"
+										:active-value="1"
+										:inactive-value="0"
+										active-color="#F56C6C"
+									></el-switch>
+								</el-form-item>
+								<el-form-item label="备注信息" prop="remark">
+									<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" rows="1" />
+								</el-form-item>
+							</el-col>
+							<el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8">
+								<el-form-item label="定位方式" prop="locationWay">
+									<el-select v-model="form.locationWay" placeholder="请选择设备状态" clearable size="small" style="width: 100%" :disabled="form.deviceType === 3">
+										<el-option v-for="dict in dict.type.iot_location_way" :key="dict.value" :label="dict.label" :value="Number(dict.value)" />
+									</el-select>
+								</el-form-item>
+								<el-form-item label="设备经度" prop="longitude">
+									<el-input v-model="form.longitude" placeholder="请输入设备经度" type="number" :disabled="form.locationWay != 3">
+										<el-link slot="append" :underline="false" href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" :disabled="form.locationWay != 3">坐标拾取</el-link>
+									</el-input>
+								</el-form-item>
+								<el-form-item label="设备纬度" prop="latitude">
+									<el-input v-model="form.latitude" placeholder="请输入设备纬度" type="number" :disabled="form.locationWay != 3">
+										<el-link slot="append" :underline="false" href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" :disabled="form.locationWay != 3">坐标拾取</el-link>
+									</el-input>
+								</el-form-item>
+								<el-form-item label="所在地址" prop="networkAddress">
+									<el-input v-model="form.networkAddress" placeholder="请输入设备所在地址" :disabled="form.locationWay != 3" />
+								</el-form-item>
+								<el-form-item label="入网地址" prop="networkIp">
+									<el-input v-model="form.networkIp" placeholder="设备入网IP" disabled />
+								</el-form-item>
+								<el-form-item label="激活时间" prop="activeTime">
+									<el-date-picker clearable v-model="form.activeTime" type="date" value-format="yyyy-MM-dd" placeholder="设备激活时间" disabled style="width: 100%"></el-date-picker>
+								</el-form-item>
+								<el-form-item label="设备信号" prop="rssi">
+									<el-input v-model="form.rssi" placeholder="设备信号强度" disabled />
+								</el-form-item>
+								<el-form-item label="其他信息" prop="remark" v-if="form.deviceId != 0">
+									<el-button size="small" @click="handleViewMqtt()">认证信息</el-button>
+									<el-button size="small" @click="openCodeDialog()">二维码</el-button>
+								</el-form-item>
+							</el-col>
+							<el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="8" v-if="form.deviceId != 0">
+								<div style="border: 1px solid #dfe4ed; border-radius: 5px; padding: 5px; text-align: center; line-height: 400px">
+									<div id="map" style="height: 435px; width: 100%">地图展示区域，新增后显示</div>
+								</div>
+							</el-col>
+						</el-row>
+					</el-form>
+					
+					<el-form label-width="100px" style="margin-top: 50px">
+						<el-form-item style="text-align: center; margin-left: -100px; margin-top: 10px">
+							<el-button type="primary" @click="submitForm" v-hasPermi="['iot:device:edit']" v-show="form.deviceId != 0">修 改</el-button>
+							<el-button type="primary" @click="submitForm" v-hasPermi="['iot:device:add']" v-show="form.deviceId == 0">新 增</el-button>
+						</el-form-item>
+					</el-form>
+					
+					<!-- 选择产品 -->
+					<product-list ref="productList" :productId="form.productId" @productEvent="getProductData($event)" />
+					
+					<sipid ref="sipidGen" :product="form" @addGenEvent="getSipIDData($event)" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="runningStatus" v-if="form.deviceType !== 3 && !isSubDev">
+					<span slot="label">运行状态</span>
+					<running-status ref="runningStatus" :device="form" @statusEvent="getDeviceStatusData($event)"/>
+				</el-tab-pane>
+				
+				<!-- <el-tab-pane :disabled="form.deviceId === 0" v-if="form.deviceType === 3" name="sipPlayer">
+			<span slot="label"><span style="color:red;">￥ </span>设备直播</span>
+			<business ref="business"/>
+		  </el-tab-pane> -->
+<!--				<el-tab-pane name="videoLive" :disabled="form.deviceId == 0" v-if="form.deviceType === 3">
+					<span slot="label">设备直播</span>
+					<device-live-stream ref="deviceLiveStream" :device="form" />
+				</el-tab-pane>-->
+				
+				<el-tab-pane name="deviceTimer" :disabled="form.deviceId === 0" v-if="form.deviceType !== 3 && hasShrarePerm('timer')">
+					<span slot="label">设备定时</span>
+					<device-timer ref="deviceTimer" :device="form" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="deviceUser" :disabled="form.deviceId == 0">
+					<span slot="label">设备用户</span>
+					<device-user ref="deviceUser" :device="form" @userEvent="getUserData($event)" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="deviceLog" :disabled="form.deviceId == 0 && hasShrarePerm('log')" lazy>
+					<span slot="label">事件日志</span>
+					<device-log ref="deviceLog" :device="form" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="deviceFuncLog" :disabled="form.deviceId == 0" v-if="form.deviceType !== 3 && hasShrarePerm('log')" lazy>
+					<span slot="label">指令日志</span>
+					<device-func ref="deviceFuncLog" :device="form" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="deviceMonitor" :disabled="form.deviceId == 0">
+					<span slot="label">实时监测</span>
+					<device-monitor ref="deviceMonitor" :device="form" />
+				</el-tab-pane>
+				
+				<el-tab-pane name="deviceMonitorStats" :disabled="form.deviceId == 0">
+					<span slot="label">监测统计</span>
+					<device-monitor-stats ref="deviceMonitorStats" :device="form" />
+				</el-tab-pane>
+			</el-tabs>
+			
+			<!-- 设备配置JSON -->
+			<el-dialog title="摘要（设备上传的只读数据）" :visible.sync="openSummary" width="700px" append-to-body>
+				<el-row :gutter="20">
+					<el-col :span="14">
+						<div style="border: 1px solid #ccc; margin-top: -15px; height: 350px; width: 360px; overflow: scroll">
+							<json-viewer :value="summary" :expand-depth="10" copyable>
+								<template v-slot:copy>复制</template>
+							</json-viewer>
+						</div>
+					</el-col>
+					<el-col :span="10">
+						<div style="border: 1px solid #ccc; width: 200px; text-align: center; margin-left: 20px; margin-top: -10px">
+							<vue-qr :text="qrText" :size="200"></vue-qr>
+							<div style="padding-bottom: 10px">设备二维码</div>
+						</div>
+					</el-col>
+				</el-row>
+				<div slot="footer" class="dialog-footer">
+					<el-button type="info" @click="closeSummaryDialog">关 闭</el-button>
+				</div>
+			</el-dialog>
+			<!-- 二维码 -->
+			<el-dialog :visible.sync="openCode" width="300px" append-to-body>
+				<div style="border: 1px solid #ccc; width: 220px; text-align: center; margin: 0 auto; margin-top: -15px">
+					<vue-qr :text="qrText" :size="200"></vue-qr>
+					<div style="padding-bottom: 10px">设备二维码</div>
+				</div>
+			</el-dialog>
+			<el-dialog title="Mqtt连接参数" :visible.sync="openViewMqtt" width="600px" append-to-body>
+				<el-form ref="listQuery" :model="listQuery" :rules="rules" label-width="150px">
+					<el-form-item label="clientId" prop="clientId">
+						<el-input v-model="listQuery.clientId" disabled style="width: 80%" />
+					</el-form-item>
+					<el-form-item label="username" prop="username">
+						<el-input v-model="listQuery.username" disabled style="width: 80%" />
+					</el-form-item>
+					<el-form-item label="passwd" prop="passwd">
+						<el-input clearable v-model="listQuery.passwd" disabled style="width: 80%"></el-input>
+					</el-form-item>
+					<el-form-item label="port" prop="port">
+						<el-input clearable v-model="listQuery.port" disabled style="width: 80%"></el-input>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button class="btns" type="primary" @click="doCopy(2)">一键复制</el-button>
+					<el-button @click="closeSummaryDialog">关 闭</el-button>
+				</div>
+			</el-dialog>
+		</el-card>
+	</div>
 </template>
 
 <script>
@@ -229,9 +244,11 @@ import productList from './product-list';
 import deviceLog from './device-log';
 import deviceUser from './device-user';
 import runningStatus from './running-status';
-
 import deviceTimer from './device-timer';
 import DeviceFunc from './device-functionlog';
+import DeviceMonitor from "./device-monitor";
+import deviceMonitorStats from './device-monitor-stats';
+
 import business from '@/views/iot/business/index.vue';
 import vueQr from 'vue-qr';
 import { loadBMap } from '@/utils/map.js';
@@ -250,6 +267,8 @@ export default {
     components: {
         business,
         DeviceFunc,
+				DeviceMonitor,
+			  deviceMonitorStats,
         deviceLog,
         deviceUser,
         runningStatus,
@@ -942,3 +961,95 @@ export default {
     },
 };
 </script>
+
+<style>
+.el-aside {
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	color: #333;
+}
+
+.el-main {
+	margin: 0;
+	padding: 0 10px;
+	background-color: #fff;
+	color: #333;
+}
+
+.pane-item {
+	margin-top: 10px;
+}
+.product-edit {
+	padding: 20px
+}
+
+.product-edit .top-card {
+	margin-bottom: 10px
+}
+
+.product-edit .top-card .title-wrap {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center
+}
+
+.product-edit .top-card .title-wrap .top-button {
+	height: 22px;
+	color: #909399;
+	background: #f4f5f7;
+	padding: 0 8px;
+	border: none
+}
+
+.product-edit .top-card .title-wrap .info-item {
+	font-weight: 400;
+	font-size: 14px;
+	color: #333;
+	line-height: 20px;
+	margin-left: 36px
+}
+
+.product-edit .custom-tabs .basic-span {
+	margin-top: 16px
+}
+
+.product-edit .custom-tabs .el-card__body {
+	padding: 0 20px
+}
+
+.product-edit .custom-tabs .el-tabs__active-bar {
+	background-color: transparent
+}
+
+.product-edit .custom-tabs .el-tabs__nav {
+	margin-bottom: 12px
+}
+
+.product-edit .custom-tabs .el-tabs__item {
+	padding: 0 25px!important;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	list-style: none;
+	font-size: 14px;
+	font-weight: 500;
+	color: #303133;
+	position: relative
+}
+
+.product-edit .custom-tabs .el-tabs__item.is-active {
+	color: #fff;
+	background-color: #486ff2;
+	border-radius: 4px;
+	height: 32px;
+	line-height: 34px
+}
+</style>
