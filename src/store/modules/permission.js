@@ -1,9 +1,10 @@
 import auth from '@/plugins/auth'
-import router, { constantRoutes, dynamicRoutes } from '@/router'
+import router, { constantRoutes, dynamicRoutes, frontendRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
+import store from '@/store'
 
 const permission = {
   state: {
@@ -30,23 +31,30 @@ const permission = {
   },
   actions: {
     // 生成路由
-    GenerateRoutes({ commit }) {
+    GenerateRoutes({ commit, state }) {
       return new Promise(resolve => {
-        // 向后端请求路由数据
-        getRouters().then(res => {
-          const sdata = JSON.parse(JSON.stringify(res.data))
-          const rdata = JSON.parse(JSON.stringify(res.data))
-          const sidebarRoutes = filterAsyncRouter(sdata)
-          const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-          const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
-          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
-          router.addRoutes(asyncRoutes);
-          commit('SET_ROUTES', rewriteRoutes)
-          commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
-          commit('SET_DEFAULT_ROUTES', sidebarRoutes)
-          commit('SET_TOPBAR_ROUTES', sidebarRoutes)
-          resolve(rewriteRoutes)
-        })
+        if (store.getters.isFrontend) {
+          // 前台模式使用静态路由
+          commit('SET_ROUTES', frontendRoutes)
+          commit('SET_SIDEBAR_ROUTERS', frontendRoutes)
+          resolve(frontendRoutes)
+        } else {
+          // 向后端请求路由数据
+          getRouters().then(res => {
+            const sdata = JSON.parse(JSON.stringify(res.data))
+            const rdata = JSON.parse(JSON.stringify(res.data))
+            const sidebarRoutes = filterAsyncRouter(sdata)
+            const rewriteRoutes = filterAsyncRouter(rdata, false, true)
+            const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
+            rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
+            router.addRoutes(asyncRoutes);
+            commit('SET_ROUTES', rewriteRoutes)
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
+            commit('SET_DEFAULT_ROUTES', sidebarRoutes)
+            commit('SET_TOPBAR_ROUTES', sidebarRoutes)
+            resolve(rewriteRoutes)
+          })
+        }
       })
     }
   }

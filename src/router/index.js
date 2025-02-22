@@ -27,10 +27,51 @@ import Layout from '@/layout'
     activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
   }
  */
+// 前台静态路由
+export const frontendRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/frontend/index'),
+        name: 'Index',
+        meta: { title: '站点总览', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/equipment',
+    component: Layout,
+    meta: { title: '设备监控', icon: 'monitor' },
+    children: [
+      {
+        path: 'pcs',
+        component: () => import('@/views/frontend/pcs'),
+        meta: { title: '储能单元PCS' },
+        children: [
+          { path: 'bms', component: () => import('@/views/frontend/bms'), meta: { title: 'BMS' }},
+          // { path: 'air', component: () => import('@/views/frontend/air'), meta: { title: '空调' }}
+        ]
+      }
+    ]
+  },
+  {
+    path: '/report',
+    component: Layout,
+    meta: { title: '统计报表', icon: 'chart' },
+    children: [
+      { path: 'event', component: () => import('@/views/frontend/event'), meta: { title: '事件报表' }},
+      { path: 'power', component: () => import('@/views/frontend/power'), meta: { title: '电量报表' }}
+    ]
+  }
+]
 
 // 公共路由
 export const constantRoutes = [
-  {
+    {
     path: '/redirect',
     component: Layout,
     hidden: true,
@@ -67,19 +108,19 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
-  {
-    path: '',
-    component: Layout,
-    redirect: 'index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/index'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
+  // {
+  //   path: '',
+  //   component: Layout,
+  //   redirect: 'index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/index'),
+  //       name: 'Index',
+  //       meta: { title: '首页', icon: 'dashboard', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/user',
     component: Layout,

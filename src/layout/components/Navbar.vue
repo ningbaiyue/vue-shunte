@@ -31,12 +31,20 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
+					<!-- 新增切换模式菜单 -->
+					<el-dropdown-item v-if="!isFrontend" @click.native="toggleSystemMode(true)">
+						<span>切换前台</span>
+					</el-dropdown-item>
+					<el-dropdown-item v-if="isFrontend" @click.native="toggleSystemMode(false)">
+						<span>切换后台</span>
+					</el-dropdown-item>
+					
           <router-link to="/user/profile">
             <el-dropdown-item>个人中心</el-dropdown-item>
           </router-link>
-          <el-dropdown-item @click.native="setting = true">
-            <span>布局设置</span>
-          </el-dropdown-item>
+<!--          <el-dropdown-item @click.native="setting = true">-->
+<!--            <span>布局设置</span>-->
+<!--          </el-dropdown-item>-->
           <el-dropdown-item divided @click.native="logout">
             <span>退出登录</span>
           </el-dropdown-item>
@@ -72,7 +80,8 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+			'isFrontend' // 新增getter
     ]),
     setting: {
       get() {
@@ -92,6 +101,15 @@ export default {
     }
   },
   methods: {
+		toggleSystemMode(mode) {
+			this.$store.dispatch('system/toggleSystemMode', mode).then(() => {
+				// 切换后跳转到对应首页
+				const targetPath = this.isFrontend ? '/index' : '/iot/category'
+				if (this.$route.path !== targetPath) {
+					this.$router.push(targetPath)
+				}
+			})
+		},
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

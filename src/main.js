@@ -112,6 +112,47 @@ Vue.use(Element, {
 
 Vue.config.productionTip = false
 
+import Router from "vue-router";
+import { constantRoutes, dynamicRoutes } from '@/router'
+
+Vue.use(Router)
+// 创建路由工厂函数
+function createRouter(isFrontend) {
+    return new Router({
+        mode: 'history',
+        scrollBehavior: () => ({ y: 0 }),
+        routes: isFrontend ? [...constantRoutes] : []
+    })
+}
+// 监听系统模式变化
+store.watch(
+    state => state.system.isFrontend,
+    async (newVal) => {
+        // 1. 重置路由实例
+        const newRouter = createRouter(newVal)
+        // 2. 安全替换当前路由matcher
+        router.matcher = newRouter.matcher
+
+        // 2. 按模式加载对应路由
+        if (newVal) {
+            // 前台模式加载静态路由
+            await store.dispatch('GenerateRoutes')
+            router.addRoutes(store.getters.sidebarRouters)
+        } else {
+            // 后台模式动态加载
+            await store.dispatch('GenerateRoutes')
+            router.addRoutes(store.getters.sidebarRouters)
+        }
+
+        // 3. 强制刷新当前路由
+        const initPath = newVal ? '/index' : '/iot/category'
+        if (router.currentRoute.path !== initPath) {
+            router.replace(initPath).catch(() => {})
+        }
+    },
+    { immediate: true }
+)
+
 new Vue({
   el: '#app',
   router,
