@@ -37,7 +37,6 @@ export const frontendRoutes = [
       {
         path: 'index',
         component: () => import('@/views/frontend/index'),
-        name: 'Index',
         meta: { title: '站点总览', icon: 'dashboard', affix: true }
       }
     ]
