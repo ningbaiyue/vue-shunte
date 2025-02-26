@@ -38,7 +38,7 @@
 							</el-row>
 						</el-col>
 						<el-col :span="4" class="button-right">
-							<el-button type="primary" size="mini" @click="handleAdd">电站列表</el-button>
+							<el-button type="primary" size="mini" @click="handleList">电站列表</el-button>
 						</el-col>
 					</el-row>
 					
@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import EnergyChart from './components/EnergyChart.vue'
+import EnergyChart from '../components/EnergyChart.vue'
 import MapView from "@/views/frontend/components/MapView.vue";
 
 export default {
@@ -140,8 +140,11 @@ export default {
 	},
 	methods: {
 		handleAdd() {
-			this.$message('新建电站')
+			this.$router.push('/power/addEdit')
 		},
+		handleList() {
+			this.$router.push('/power/list')
+		}
 	}
 }
 </script>

@@ -1,5 +1,5 @@
 const state = {
-    isFrontend: true || JSON.parse(localStorage.getItem('mode')) // 默认前台模式
+    isFrontend: JSON.parse(localStorage.getItem('mode')) // 默认前台模式
 }
 
 const mutations = {

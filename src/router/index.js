@@ -36,9 +36,24 @@ export const frontendRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/frontend/index'),
+        component: () => import('@/views/frontend/allocate/index.vue'),
         meta: { title: '站点总览', icon: 'dashboard', affix: true }
       }
+    ]
+  },
+  {
+    path: '/power',
+    component: Layout,
+    meta: { title: '配置管理', icon: 'chart' },
+    children: [
+      { path: 'addEdit',
+        component: () => import('@/views/frontend/allocate/addEditPower'),
+        name: 'addEdit',
+        meta: { title: '配置电站', keepAlive: true, requiresAuth: true } // 新增缓存配置
+      },
+      { path: 'list',
+        component: () => import('@/views/frontend/allocate/listPower'),
+        meta: { title: '电站列表' }}
     ]
   },
   {
@@ -48,24 +63,46 @@ export const frontendRoutes = [
     children: [
       {
         path: 'pcs',
-        component: () => import('@/views/frontend/pcs'),
-        meta: { title: '储能单元PCS' },
-        children: [
-          { path: 'bms', component: () => import('@/views/frontend/bms'), meta: { title: 'BMS' }},
-          // { path: 'air', component: () => import('@/views/frontend/air'), meta: { title: '空调' }}
-        ]
+        component: () => import('@/views/frontend/bms'),
+        meta: { title: '储能单元PCS' }
+      },
+      {
+        path: 'pcs1',
+        component: () => import('@/views/frontend/bms'),
+        meta: { title: '储能单元PCS1' }
       }
     ]
   },
   {
-    path: '/report',
+    path: '/allocate',
     component: Layout,
     meta: { title: '统计报表', icon: 'chart' },
     children: [
       { path: 'event', component: () => import('@/views/frontend/event'), meta: { title: '事件报表' }},
-      { path: 'power', component: () => import('@/views/frontend/power'), meta: { title: '电量报表' }}
+      { path: 'power', component: () => import('@/views/frontend/event'), meta: { title: '电量报表' }}
     ]
-  }
+  },
+  {
+    path: '/ruleengine',
+    component: Layout,
+    meta: { title: '规则引擎', icon: 'chart' },
+    children: [
+      { path: 'script', component: () => import('@/views/iot/scene/script'), meta: { title: '规则脚本' }},
+      /*{ path: 'scene', component: () => import('@/views/frontend/power'), meta: { title: '场景联动' }},
+      { path: 'alert', component: () => import('@/views/frontend/power'), meta: { title: '告警配置' }},
+      { path: 'alertLog', component: () => import('@/views/frontend/power'), meta: { title: '告警记录' }},*/
+    ]
+  },
+  {
+    path: '/template',
+    component: Layout,
+    meta: { title: '运维管理', icon: 'chart' },
+    children: [
+      { path: 'info', component: () => import('@/views/frontend/energyInfo'), meta: { title: '储能站点信息' }},
+      { path: 'protocol', component: () => import('@/views/iot/protocol'), meta: { title: '协议管理' }},
+      // { path: 'alert', component: () => import('@/views/frontend/power'), meta: { title: '采集点模板' }},
+    ]
+  },
 ]
 
 // 公共路由

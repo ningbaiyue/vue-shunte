@@ -145,10 +145,10 @@ store.watch(
         }
 
         // 3. 强制刷新当前路由
-        const initPath = newVal ? '/index' : '/iot/category'
+        /*const initPath = newVal ? '/index' : '/iot/category'
         if (router.currentRoute.path !== initPath) {
             router.replace(initPath).catch(() => {})
-        }
+        }*/
     },
     { immediate: true }
 )
