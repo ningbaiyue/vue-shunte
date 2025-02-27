@@ -1,6 +1,6 @@
 <template>
     <div style="padding:6px;">
-        <el-card v-show="showSearch" style="margin-bottom:5px;">
+        <el-card v-show="showSearch" style="margin-bottom:4px;">
             <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px" style="margin-bottom:-20px;">
                 <el-form-item label="分类名称" prop="categoryName">
                     <el-input v-model="queryParams.categoryName" placeholder="请输入产品分类名称" clearable size="small"

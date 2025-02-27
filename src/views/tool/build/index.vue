@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" style="background-color: #fff;">
     <div class="left-board">
       <div class="logo-wrapper">
         <div class="logo">

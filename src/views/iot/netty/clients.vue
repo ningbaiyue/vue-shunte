@@ -1,6 +1,6 @@
 <template>
     <div style="padding: 6px">
-        <el-card v-show="showSearch" style="margin-bottom: 6px">
+        <el-card v-show="showSearch" style="margin-bottom: 10px">
             <el-form @submit.native.prevent :model="queryParams" ref="queryForm" :inline="true" label-width="68px" style="margin-bottom: -20px">
                 <el-form-item label="客户端" prop="clientId">
                     <el-input v-model="queryParams.clientId" placeholder="请输入客户端ID" clearable size="small" @keyup.enter.native="handleQuery" />

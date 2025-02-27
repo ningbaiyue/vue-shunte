@@ -1,76 +1,80 @@
 <template>
 <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="85px">
-        <el-form-item label="第三方平台" prop="platform">
-            <el-select v-model="queryParams.platform" clearable placeholder="请选择平台" size="small">
-                <el-option v-for="dict in dict.type.iot_social_platform" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" clearable placeholder="请选择状态" size="small">
-                <el-option v-for="dict in dict.type.iot_social_platform_status" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['iot:platform:add']">新增
-            </el-button>
-        </el-col>
-        <el-col :span="1.5">
-            <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['iot:platform:edit']">修改
-            </el-button>
-        </el-col>
-        <el-col :span="1.5">
-            <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['iot:platform:remove']">删除
-            </el-button>
-        </el-col>
-        <el-col :span="1.5">
-            <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['iot:platform:export']">导出
-            </el-button>
-        </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table v-loading="loading" :data="platformList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column align="center" label="平台名称" prop="platform">
-            <template slot-scope="scope">
-                <dict-tag :options="dict.type.iot_social_platform" :value="scope.row.platform" />
-            </template>
-        </el-table-column>
-
-        <el-table-column align="center" label="状态" prop="status" width="75">
-            <template slot-scope="scope">
-                <dict-tag :options="dict.type.iot_social_platform_status" :value="scope.row.status" />
-            </template>
-        </el-table-column>
-        <el-table-column label="平台申请ID" align="center" prop="clientId" />
-        <el-table-column label="跳转地址" align="center" prop="redirectUri" width="180" :show-overflow-tooltip="true" />
-        <el-table-column align="center" label="绑定登录uri" prop="bindUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.bindId)" />
-        <el-table-column align="center" label="跳转登录uri" prop="redirectLoginUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.redirectLogin)" />
-        <el-table-column align="center" label="错误提示uri" prop="errorMsgUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.errorId)" />
-        <el-table-column align="center" label="创建时间" prop="createTime" width="100">
-            <template slot-scope="scope">
-                <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-            </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
-                <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['iot:platform:edit']">修改
-                </el-button>
-                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['iot:platform:remove']">删除
-                </el-button>
-            </template>
-        </el-table-column>
-    </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+	<el-card  body-style="padding-bottom: 4px">
+		<el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="85px">
+			<el-form-item label="第三方平台" prop="platform">
+				<el-select v-model="queryParams.platform" clearable placeholder="请选择平台" size="small">
+					<el-option v-for="dict in dict.type.iot_social_platform" :key="dict.value" :label="dict.label" :value="dict.value" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="状态" prop="status">
+				<el-select v-model="queryParams.status" clearable placeholder="请选择状态" size="small">
+					<el-option v-for="dict in dict.type.iot_social_platform_status" :key="dict.value" :label="dict.label" :value="dict.value" />
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+			</el-form-item>
+		</el-form>
+	</el-card>
+	
+	<el-card style="margin-top: 10px">
+		<el-row :gutter="10" class="mb8">
+			<el-col :span="1.5">
+				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['iot:platform:add']">新增
+				</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['iot:platform:edit']">修改
+				</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['iot:platform:remove']">删除
+				</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['iot:platform:export']">导出
+				</el-button>
+			</el-col>
+			<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+		</el-row>
+		
+		<el-table v-loading="loading" :data="platformList" @selection-change="handleSelectionChange">
+			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column align="center" label="平台名称" prop="platform">
+				<template slot-scope="scope">
+					<dict-tag :options="dict.type.iot_social_platform" :value="scope.row.platform" />
+				</template>
+			</el-table-column>
+			
+			<el-table-column align="center" label="状态" prop="status" width="75">
+				<template slot-scope="scope">
+					<dict-tag :options="dict.type.iot_social_platform_status" :value="scope.row.status" />
+				</template>
+			</el-table-column>
+			<el-table-column label="平台申请ID" align="center" prop="clientId" />
+			<el-table-column label="跳转地址" align="center" prop="redirectUri" width="180" :show-overflow-tooltip="true" />
+			<el-table-column align="center" label="绑定登录uri" prop="bindUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.bindId)" />
+			<el-table-column align="center" label="跳转登录uri" prop="redirectLoginUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.redirectLogin)" />
+			<el-table-column align="center" label="错误提示uri" prop="errorMsgUri" :show-tooltip-when-overflow="true" :render-header="(h,column)=>renderHeaderMethods(h,column,columnTips.errorId)" />
+			<el-table-column align="center" label="创建时间" prop="createTime" width="100">
+				<template slot-scope="scope">
+					<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+				<template slot-scope="scope">
+					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['iot:platform:edit']">修改
+					</el-button>
+					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['iot:platform:remove']">删除
+					</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		
+		<pagination v-show="total>0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+	</el-card>
 
     <!-- 添加或修改第三方登录平台控制对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>

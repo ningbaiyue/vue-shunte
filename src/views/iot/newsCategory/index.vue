@@ -1,60 +1,64 @@
 <template>
     <div class="app-container">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-            <el-form-item label="分类名称" prop="categoryName">
-                <el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable size="small"
-                    @keyup.enter.native="handleQuery" />
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-            </el-form-item>
-        </el-form>
-
-        <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                    v-hasPermi="['iot:newsCategory:add']">新增</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                    v-hasPermi="['iot:newsCategory:edit']">修改</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
-                    v-hasPermi="['iot:newsCategory:remove']">删除</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-                    v-hasPermi="['iot:newsCategory:export']">导出</el-button>
-            </el-col>
-            <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-        </el-row>
-
-        <el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="分类编号" align="center" prop="categoryId" />
-            <el-table-column label="分类名称" align="center" prop="categoryName" />
-            <el-table-column label="显示顺序" align="center" prop="orderNum" />
-            <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-                <template slot-scope="scope">
-                    <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="备注" align="center" prop="remark" min-width="200" header-align="center" />
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                    <el-button size="mini" type="text" icon="el-icon-view" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['iot:newsCategory:add']">查看</el-button>
-                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                        v-hasPermi="['iot:newsCategory:remove']">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-            @pagination="getList" />
-
+			<el-card  body-style="padding-bottom: 4px">
+				<el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+					<el-form-item label="分类名称" prop="categoryName">
+						<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable size="small"
+											@keyup.enter.native="handleQuery" />
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+						<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+					</el-form-item>
+				</el-form>
+			</el-card>
+			
+			<el-card style="margin-top: 10px">
+				<el-row :gutter="10" class="mb8">
+					<el-col :span="1.5">
+						<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+											 v-hasPermi="['iot:newsCategory:add']">新增</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+											 v-hasPermi="['iot:newsCategory:edit']">修改</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+											 v-hasPermi="['iot:newsCategory:remove']">删除</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+											 v-hasPermi="['iot:newsCategory:export']">导出</el-button>
+					</el-col>
+					<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+				</el-row>
+				
+				<el-table v-loading="loading" :data="categoryList" @selection-change="handleSelectionChange">
+					<el-table-column type="selection" width="55" align="center" />
+					<el-table-column label="分类编号" align="center" prop="categoryId" />
+					<el-table-column label="分类名称" align="center" prop="categoryName" />
+					<el-table-column label="显示顺序" align="center" prop="orderNum" />
+					<el-table-column label="创建时间" align="center" prop="createTime" width="180">
+						<template slot-scope="scope">
+							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="备注" align="center" prop="remark" min-width="200" header-align="center" />
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+						<template slot-scope="scope">
+							<el-button size="mini" type="text" icon="el-icon-view" @click="handleUpdate(scope.row)"
+												 v-hasPermi="['iot:newsCategory:add']">查看</el-button>
+							<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+												 v-hasPermi="['iot:newsCategory:remove']">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				
+				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+										@pagination="getList" />
+			</el-card>
+			
         <!-- 添加或修改新闻分类对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">

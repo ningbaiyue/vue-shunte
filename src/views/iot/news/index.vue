@@ -1,111 +1,115 @@
 <template>
     <div class="app-container">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="60px" v-if="isAdmin">
-            <el-form-item label="标题" prop="title">
-                <el-input v-model="queryParams.title" placeholder="请输入标题" clearable size="small"
-                    @keyup.enter.native="handleQuery" />
-            </el-form-item>
-            <el-form-item label="分类" prop="categoryName">
-                <el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable size="small"
-                    @keyup.enter.native="handleQuery" />
-            </el-form-item>
-            <el-form-item label="置顶" prop="isTop">
-                <el-select v-model="queryParams.isTop" placeholder="是否置顶" clearable size="small" style="width:100px;">
-                    <el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
-                        :value="dict.value" />
-                </el-select>
-            </el-form-item>
-            <el-form-item label="轮播" prop="isBanner">
-                <el-select v-model="queryParams.isBanner" placeholder="是否轮播" clearable size="small" style="width:100px;">
-                    <el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
-                        :value="dict.value" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="发布" prop="status">
-                <el-select v-model="queryParams.status" placeholder="选择状态" clearable size="small" style="width:100px;">
-                    <el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
-                        :value="dict.value" />
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-            </el-form-item>
-        </el-form>
-
-        <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                    v-hasPermi="['iot:news:add']">新增</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                    v-hasPermi="['iot:news:edit']">修改</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
-                    v-hasPermi="['iot:news:remove']">删除</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-                    v-hasPermi="['iot:news:export']">导出</el-button>
-            </el-col>
-            <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-        </el-row>
-
-        <el-table v-loading="loading" :data="newsList" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="图片" align="center" prop="imgUrl" width="140px;">
-                <template slot-scope="scope">
-                    <el-image style="border-radius:5px;height:80px;width:120px;margin-bottom:-5px;" lazy
-                        :preview-src-list="[baseUrl + scope.row.imgUrl]" :src="baseUrl + scope.row.imgUrl"
-                        fit="cover"></el-image>
-                </template>
-            </el-table-column>
-            <el-table-column label="标题" align="center" prop="title" />
-            <el-table-column label="分类" align="center" prop="categoryName">
-                <template slot-scope="scope">
-                    <el-tag type="info">{{ scope.row.categoryName }}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column label="作者" align="center" prop="author" width="100" />
-            <el-table-column label="置顶" align="center" prop="isTop" width="80">
-                <template slot-scope="scope">
-                    <dict-tag :options="dict.type.iot_yes_no" :value="scope.row.isTop" />
-                </template>
-            </el-table-column>
-            <el-table-column label="轮播" align="center" prop="isBanner" width="80">
-                <template slot-scope="scope">
-                    <dict-tag :options="dict.type.iot_yes_no" :value="scope.row.isBanner" />
-                </template>
-            </el-table-column>
-            <el-table-column label="发布" align="center" prop="status" width="80">
-                <template slot-scope="scope">
-                    <dict-tag :options="dict.type.iot_yes_no" :value="scope.row.status" />
-                </template>
-            </el-table-column>
-
-            <el-table-column label="创建时间" align="center" prop="createTime" width="120">
-                <template slot-scope="scope">
-                    <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="备注" align="center" prop="remark" />
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                    <el-button size="mini" type="text" icon="el-icon-view"
-                        @click="openDetailDialog(scope.row.newsId)">查看</el-button>
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['iot:news:edit']">修改</el-button>
-                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                        v-hasPermi="['iot:news:remove']">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-            @pagination="getList" />
+			<el-card  body-style="padding-bottom: 4px">
+				<el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="60px" v-if="isAdmin">
+					<el-form-item label="标题" prop="title">
+						<el-input v-model="queryParams.title" placeholder="请输入标题" clearable size="small"
+											@keyup.enter.native="handleQuery" />
+					</el-form-item>
+					<el-form-item label="分类" prop="categoryName">
+						<el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable size="small"
+											@keyup.enter.native="handleQuery" />
+					</el-form-item>
+					<el-form-item label="置顶" prop="isTop">
+						<el-select v-model="queryParams.isTop" placeholder="是否置顶" clearable size="small" style="width:100px;">
+							<el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
+												 :value="dict.value" />
+						</el-select>
+					</el-form-item>
+					<el-form-item label="轮播" prop="isBanner">
+						<el-select v-model="queryParams.isBanner" placeholder="是否轮播" clearable size="small" style="width:100px;">
+							<el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
+												 :value="dict.value" />
+						</el-select>
+					</el-form-item>
+					
+					<el-form-item label="发布" prop="status">
+						<el-select v-model="queryParams.status" placeholder="选择状态" clearable size="small" style="width:100px;">
+							<el-option v-for="dict in dict.type.iot_yes_no" :key="dict.value" :label="dict.label"
+												 :value="dict.value" />
+						</el-select>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+						<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+					</el-form-item>
+				</el-form>
+			</el-card>
+			
+			<el-card style="margin-top: 10px">
+				<el-row :gutter="10" class="mb8">
+					<el-col :span="1.5">
+						<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+											 v-hasPermi="['iot:news:add']">新增</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+											 v-hasPermi="['iot:news:edit']">修改</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+											 v-hasPermi="['iot:news:remove']">删除</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+											 v-hasPermi="['iot:news:export']">导出</el-button>
+					</el-col>
+					<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+				</el-row>
+				
+				<el-table v-loading="loading" :data="newsList" @selection-change="handleSelectionChange">
+					<el-table-column type="selection" width="55" align="center" />
+					<el-table-column label="图片" align="center" prop="imgUrl" width="140px;">
+						<template slot-scope="scope">
+							<el-image style="border-radius:5px;height:80px;width:120px;margin-bottom:-5px;" lazy
+												:preview-src-list="[baseUrl + scope.row.imgUrl]" :src="baseUrl + scope.row.imgUrl"
+												fit="cover"></el-image>
+						</template>
+					</el-table-column>
+					<el-table-column label="标题" align="center" prop="title" />
+					<el-table-column label="分类" align="center" prop="categoryName">
+						<template slot-scope="scope">
+							<el-tag type="info">{{ scope.row.categoryName }}</el-tag>
+						</template>
+					</el-table-column>
+					<el-table-column label="作者" align="center" prop="author" width="100" />
+					<el-table-column label="置顶" align="center" prop="isTop" width="80">
+						<template slot-scope="scope">
+							<dict-tag :options="dict.type.iot_yes_no" :value="scope.row.isTop" />
+						</template>
+					</el-table-column>
+					<el-table-column label="轮播" align="center" prop="isBanner" width="80">
+						<template slot-scope="scope">
+							<dict-tag :options="dict.type.iot_yes_no" :value="scope.row.isBanner" />
+						</template>
+					</el-table-column>
+					<el-table-column label="发布" align="center" prop="status" width="80">
+						<template slot-scope="scope">
+							<dict-tag :options="dict.type.iot_yes_no" :value="scope.row.status" />
+						</template>
+					</el-table-column>
+					
+					<el-table-column label="创建时间" align="center" prop="createTime" width="120">
+						<template slot-scope="scope">
+							<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="备注" align="center" prop="remark" />
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+						<template slot-scope="scope">
+							<el-button size="mini" type="text" icon="el-icon-view"
+												 @click="openDetailDialog(scope.row.newsId)">查看</el-button>
+							<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+												 v-hasPermi="['iot:news:edit']">修改</el-button>
+							<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+												 v-hasPermi="['iot:news:remove']">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				
+				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+										@pagination="getList" />
+			</el-card>
 
         <!-- 添加或修改新闻资讯对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
