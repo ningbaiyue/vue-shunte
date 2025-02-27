@@ -87,26 +87,26 @@ export const frontendRoutes = [
     ]
   },
   {
+    path: '/template',
+    component: Layout,
+    meta: { title: '运维管理', icon: 'chart' },
+    isFrontend: true,
+    children: [
+      { path: 'info', component: () => import('@/views/energy/station'), meta: { title: '储能站点信息' }},
+      { path: 'protocol', component: () => import('@/views/iot/protocol'), meta: { title: '协议管理' }},
+      { path: 'alert', component: () => import('@/views/iot/varTemp/temp'), meta: { title: '采集点模板' }},
+    ]
+  },
+  {
     path: '/ruleengine',
     component: Layout,
     meta: { title: '规则引擎', icon: 'chart' },
     isFrontend: true,
     children: [
       { path: 'script', component: () => import('@/views/iot/scene/script'), meta: { title: '规则脚本' }},
-      /*{ path: 'scene', component: () => import('@/views/frontend/power'), meta: { title: '场景联动' }},
-      { path: 'alert', component: () => import('@/views/frontend/power'), meta: { title: '告警配置' }},
-      { path: 'alertLog', component: () => import('@/views/frontend/power'), meta: { title: '告警记录' }},*/
-    ]
-  },
-  {
-    path: '/template',
-    component: Layout,
-    meta: { title: '运维管理', icon: 'chart' },
-    isFrontend: true,
-    children: [
-      { path: 'info', component: () => import('@/views/frontend/energyInfo'), meta: { title: '储能站点信息' }},
-      { path: 'protocol', component: () => import('@/views/iot/protocol'), meta: { title: '协议管理' }},
-      // { path: 'alert', component: () => import('@/views/frontend/power'), meta: { title: '采集点模板' }},
+      { path: 'scene', component: () => import('@/views/iot/scene'), meta: { title: '场景联动' }},
+      { path: 'alert', component: () => import('@/views/iot/alert'), meta: { title: '告警配置' }},
+      { path: 'alertLog', component: () => import('@/views/iot/alert/log'), meta: { title: '告警记录' }},
     ]
   },
 ]
