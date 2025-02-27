@@ -4,7 +4,6 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
-import store from '@/store'
 
 const permission = {
   state: {
@@ -12,12 +11,16 @@ const permission = {
     addRoutes: [],
     defaultRoutes: [],
     topbarRouters: [],
-    sidebarRouters: []
+    sidebarRouters: [],
+    interfaceMode: 'frontend', // 新增：当前界面模式
+    frontendRoutes: [],        // 新增：前台路由
+    backendRoutes: [],         // 新增：后台路由
   },
   mutations: {
     SET_ROUTES: (state, routes) => {
       state.addRoutes = routes
       state.routes = constantRoutes.concat(routes)
+      // console.log('获取数据合并404页：', state, routes)
     },
     SET_DEFAULT_ROUTES: (state, routes) => {
       state.defaultRoutes = constantRoutes.concat(routes)
@@ -27,35 +30,42 @@ const permission = {
     },
     SET_SIDEBAR_ROUTERS: (state, routes) => {
       state.sidebarRouters = routes
+      // console.log('菜单路由：', state, routes)
+    },
+    SET_INTERFACE_MODE(state, mode) {
+      state.interfaceMode = mode
+    },
+    SET_FRONTEND_ROUTES(state, routes) {
+      state.frontendRoutes = routes
+    },
+    SET_BACKEND_ROUTES(state, routes) {
+      state.backendRoutes = routes
     },
   },
   actions: {
     // 生成路由
-    GenerateRoutes({ commit, state }) {
+    GenerateRoutes({ commit }) {
       return new Promise(resolve => {
-        if (store.getters.isFrontend) {
-          // 前台模式使用静态路由
-          commit('SET_ROUTES', frontendRoutes)
-          commit('SET_SIDEBAR_ROUTERS', frontendRoutes)
-          resolve(frontendRoutes)
-        } else {
-          // 向后端请求路由数据
-          getRouters().then(res => {
-            const sdata = JSON.parse(JSON.stringify(res.data))
-            const rdata = JSON.parse(JSON.stringify(res.data))
-            const sidebarRoutes = filterAsyncRouter(sdata)
-            const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-            const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
-            rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
-            router.addRoutes(asyncRoutes);
-            commit('SET_ROUTES', rewriteRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
-            commit('SET_DEFAULT_ROUTES', sidebarRoutes)
-            commit('SET_TOPBAR_ROUTES', sidebarRoutes)
-            resolve(rewriteRoutes)
-          })
-        }
+        // 向后端请求路由数据
+        getRouters().then(res => {
+          const sdata = JSON.parse(JSON.stringify(res.data))
+          const rdata = JSON.parse(JSON.stringify(res.data))
+          const sidebarRoutes = filterAsyncRouter(sdata)
+          const rewriteRoutes = filterAsyncRouter(rdata, false, true)
+          const asyncRoutes = filterDynamicRoutes(dynamicRoutes);
+          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
+          router.addRoutes(asyncRoutes);
+          commit('SET_ROUTES', rewriteRoutes)
+          commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
+          commit('SET_DEFAULT_ROUTES', sidebarRoutes)
+          commit('SET_TOPBAR_ROUTES', sidebarRoutes)
+          resolve(rewriteRoutes)
+        })
       })
+    },
+    // 新增切换方法
+    switchInterfaceMode({ commit, dispatch }, mode) {
+      commit('SET_INTERFACE_MODE', mode)
     }
   }
 }
@@ -65,6 +75,10 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
     if (type && route.children) {
       route.children = filterChildren(route.children)
+    }
+    if (!lastRouter && route.children) {
+      route.isFrontend = false
+      // console.log(route, 'childrenMap')
     }
     if (route.component) {
       // Layout ParentView 组件特殊处理
@@ -91,6 +105,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
 function filterChildren(childrenMap, lastRouter = false) {
   var children = []
   childrenMap.forEach((el, index) => {
+    // console.log('遍历动态的：', el, index)
     if (el.children && el.children.length) {
       if (el.component === 'ParentView' && !lastRouter) {
         el.children.forEach(c => {

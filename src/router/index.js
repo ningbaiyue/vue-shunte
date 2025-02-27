@@ -33,6 +33,7 @@ export const frontendRoutes = [
     path: '/',
     component: Layout,
     redirect: 'index',
+    isFrontend: true,
     children: [
       {
         path: 'index',
@@ -45,6 +46,7 @@ export const frontendRoutes = [
     path: '/power',
     component: Layout,
     meta: { title: '配置管理', icon: 'chart' },
+    isFrontend: true,
     children: [
       { path: 'addEdit',
         component: () => import('@/views/frontend/allocate/addEditPower'),
@@ -60,6 +62,7 @@ export const frontendRoutes = [
     path: '/equipment',
     component: Layout,
     meta: { title: '设备监控', icon: 'monitor' },
+    isFrontend: true,
     children: [
       {
         path: 'pcs',
@@ -77,6 +80,7 @@ export const frontendRoutes = [
     path: '/allocate',
     component: Layout,
     meta: { title: '统计报表', icon: 'chart' },
+    isFrontend: true,
     children: [
       { path: 'event', component: () => import('@/views/frontend/event'), meta: { title: '事件报表' }},
       { path: 'power', component: () => import('@/views/frontend/event'), meta: { title: '电量报表' }}
@@ -86,6 +90,7 @@ export const frontendRoutes = [
     path: '/ruleengine',
     component: Layout,
     meta: { title: '规则引擎', icon: 'chart' },
+    isFrontend: true,
     children: [
       { path: 'script', component: () => import('@/views/iot/scene/script'), meta: { title: '规则脚本' }},
       /*{ path: 'scene', component: () => import('@/views/frontend/power'), meta: { title: '场景联动' }},
@@ -97,6 +102,7 @@ export const frontendRoutes = [
     path: '/template',
     component: Layout,
     meta: { title: '运维管理', icon: 'chart' },
+    isFrontend: true,
     children: [
       { path: 'info', component: () => import('@/views/frontend/energyInfo'), meta: { title: '储能站点信息' }},
       { path: 'protocol', component: () => import('@/views/iot/protocol'), meta: { title: '协议管理' }},
@@ -107,6 +113,7 @@ export const frontendRoutes = [
 
 // 公共路由
 export const constantRoutes = [
+    ...frontendRoutes,
     {
     path: '/redirect',
     component: Layout,

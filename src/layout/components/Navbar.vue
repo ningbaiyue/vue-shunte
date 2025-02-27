@@ -32,10 +32,10 @@
         </div>
         <el-dropdown-menu slot="dropdown">
 					<!-- 新增切换模式菜单 -->
-					<el-dropdown-item v-if="!isFrontend" @click.native="toggleSystemMode(true)">
+					<el-dropdown-item v-if="interfaceMode === 'backend' " @click.native="switchInterface('frontend')">
 						<span>切换前台</span>
 					</el-dropdown-item>
-					<el-dropdown-item v-if="isFrontend" @click.native="toggleSystemMode(false)">
+					<el-dropdown-item v-else @click.native="switchInterface('backend')">
 						<span>切换后台</span>
 					</el-dropdown-item>
 					
@@ -81,7 +81,7 @@ export default {
       'sidebar',
       'avatar',
       'device',
-			'isFrontend' // 新增getter
+			'interfaceMode'
     ]),
     setting: {
       get() {
@@ -101,14 +101,15 @@ export default {
     }
   },
   methods: {
-		toggleSystemMode(mode) {
-			this.$store.dispatch('system/toggleSystemMode', mode).then(() => {
-				// 切换后跳转到对应首页
-				const targetPath = this.isFrontend ? '/index' : '/iot/category'
-				if (this.$route.path !== targetPath) {
-					this.$router.push(targetPath)
-				}
-			})
+		switchInterface(mode) {
+			console.log('switch模式', mode)
+			if (mode === 'frontend') {
+				this.$store.dispatch('switchInterfaceMode', mode)
+				this.$router.push('/')
+			} else {
+				this.$store.dispatch('switchInterfaceMode', mode)
+				this.$router.push('/iot/category')
+			}
 		},
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
