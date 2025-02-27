@@ -98,3 +98,16 @@
     font-weight: bold;
     margin-bottom: 14px;
 }
+.row-height {
+    height: calc(100vh - 70px);
+}
+.footer-btn {
+    position: absolute;
+    bottom: 80px;
+    width: calc(100% - 80px);
+    margin: 0 20px;
+    .el-button {
+        width: 100%;
+        height: 54px;
+    }
+}

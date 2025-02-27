@@ -140,7 +140,7 @@ export default {
 	},
 	methods: {
 		handleAdd() {
-			this.$router.push('/power/addEdit')
+			this.$router.push('/power/addPower')
 		},
 		handleList() {
 			this.$router.push('/power/list')

@@ -1,5 +1,5 @@
 <template>
-	<div class="iot-device">
+	<div class="iot-device app-container">
 		<el-card class="card-search">
 			<el-form :model="queryParams" ref="queryForm" :inline="true" style="margin-bottom: -20px">
 				<el-form-item label="" prop="deviceName">

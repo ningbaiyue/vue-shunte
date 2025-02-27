@@ -1,5 +1,5 @@
 <template>
-	<div style="padding:6px;">
+	<div class="app-container">
 		<el-card v-show="showSearch" style="margin-bottom:6px;">
 			<el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px" style="margin-bottom:-20px;">
 				<el-form-item label="协议名称" prop="protocolName">

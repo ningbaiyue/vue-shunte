@@ -48,14 +48,22 @@ export const frontendRoutes = [
     meta: { title: '配置管理', icon: 'chart' },
     isFrontend: true,
     children: [
-      { path: 'addEdit',
-        component: () => import('@/views/frontend/allocate/addEditPower'),
-        name: 'addEdit',
+      { path: 'addPower',
+        component: () => import('@/views/frontend/allocate/addPower'),
+        name: 'addPower',
         meta: { title: '配置电站', keepAlive: true, requiresAuth: true } // 新增缓存配置
       },
       { path: 'list',
         component: () => import('@/views/frontend/allocate/listPower'),
-        meta: { title: '电站列表' }}
+        meta: { title: '电站列表' },
+      },
+      {
+        path: 'list/edit/:id(\\d+)',
+        hidden: true,
+        component: () => import('@/views/frontend/allocate/editPower'),
+        name: 'editPower',
+        meta: { title: '电站列表 / 编辑电站', activeMenu: '/power/list' }
+      }
     ]
   },
   {

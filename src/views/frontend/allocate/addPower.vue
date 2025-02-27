@@ -34,7 +34,7 @@
 							</el-form-item>
 						</el-card>
 						
-						<el-card class="mt10">
+						<el-card class="mt10" style="height: calc(100vh - 369px)">
 							<div class="form-title">地理位置</div>
 							<el-form-item label="国家" prop="country">
 								<el-select v-model="step1Data.country" placeholder="请选择国家" clearable :style="{width: '100%'}">
@@ -68,7 +68,7 @@
 					</el-col>
 					<!-- 中列 -->
 					<el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="7">
-						<el-card>
+						<el-card class="row-height" style="position: relative;">
 							<div class="form-title">电站信息</div>
 							<el-form-item label="电站类型" prop="powerType">
 								<el-input v-model="step1Data.powerType" placeholder="请输入电站类型" :disabled='true' clearable
@@ -94,14 +94,14 @@
 								<el-input v-model="step1Data.field115" placeholder="请输入管理员电话" clearable :style="{width: '100%'}">
 								</el-input>
 							</el-form-item>
-							<el-form-item size="large">
-								<el-button type="primary" @click="validateStep1">完成创建</el-button>
-							</el-form-item>
+							<div class="footer-btn">
+								<el-button type="primary" size="large" @click="validateStep1">完成创建</el-button>
+							</div>
 						</el-card>
 					</el-col>
 					<!-- 右列 -->
 					<el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="10">
-						<el-card>
+						<el-card class="row-height">
 							<div class="form-title">
 								<span>经纬度定位</span>
 								<span style="color: #b1b1b1; font-size: 14px; margin-left: 10px">(拖动红色标点定位地址)</span>
@@ -154,7 +154,7 @@ import hourlyPower from "@/views/frontend/allocate/hourlyPower";
 import devicePower from "@/views/frontend/allocate/devicePower";
 
 export default {
-	name: 'addEdit',
+	name: 'addPower',
 	components: {
 		bdMap,
 		hourlyPower,
@@ -395,7 +395,7 @@ export default {
 	}
 }
 .box-card {
-	min-height: calc(100vh - 140px);
+	min-height: calc(100vh - 154px);
 	margin-top: 10px;
 	position: relative;
 }
