@@ -37,8 +37,20 @@ export const frontendRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/frontend/allocate/index.vue'),
+        component: () => import('@/views/frontend/allocate/index'),
         meta: { title: '站点总览', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    isFrontend: true,
+    children: [
+      {
+        path: 'systemIndex',
+        component: () => import('@/views/frontend/index'),
+        meta: { title: '系统首页', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -90,8 +102,8 @@ export const frontendRoutes = [
     meta: { title: '统计报表', icon: 'chart' },
     isFrontend: true,
     children: [
-      { path: 'event', component: () => import('@/views/frontend/event'), meta: { title: '事件报表' }},
-      { path: 'power', component: () => import('@/views/frontend/event'), meta: { title: '电量报表' }}
+      { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '事件报表' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '电量报表' }}
     ]
   },
   {

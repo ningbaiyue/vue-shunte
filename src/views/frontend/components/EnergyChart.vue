@@ -1,18 +1,19 @@
 <template>
-	<el-card shadow="never" class="chart-card">
+	<div class="chart-card">
 		<!-- 标题和选项卡 -->
 		<div class="header-container">
 			<h3 class="chart-title">{{chartTitle}}</h3>
 			<el-radio-group v-model="activeTab" size="small" @input="handleTabChange">
+				<el-radio-button label="day">七天</el-radio-button>
 				<el-radio-button label="month">月</el-radio-button>
 				<el-radio-button label="year">年</el-radio-button>
-				<el-radio-button label="total">累计</el-radio-button>
+<!--				<el-radio-button label="total">累计</el-radio-button>-->
 			</el-radio-group>
 		</div>
 		
 		<!-- 图表容器 -->
 		<div ref="chartRef" class="chart-container"></div>
-	</el-card>
+	</div>
 </template>
 
 <script>

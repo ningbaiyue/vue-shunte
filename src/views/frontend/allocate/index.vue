@@ -5,7 +5,7 @@
 			<!-- 左列 -->
 			<el-col :span="8">
 				<!-- 电站概览 -->
-				<el-card class="mb10">
+				<el-card class="mb10" body-style="padding:14px;">
 					<el-row>
 						<el-col :span="20">
 							<div class="card-title">电站概览</div>
@@ -71,7 +71,9 @@
 				</el-card>
 				
 				<!-- 充放电量图表 -->
-				<energy-chart></energy-chart>
+				<el-card>
+					<energy-chart></energy-chart>
+				</el-card>
 			</el-col>
 			
 			<!-- 右列 -->
