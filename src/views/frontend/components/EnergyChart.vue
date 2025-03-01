@@ -3,25 +3,47 @@
 		<!-- 标题和选项卡 -->
 		<div class="header-container">
 			<h3 class="chart-title">{{chartTitle}}</h3>
-			<el-radio-group v-model="activeTab" size="small" @input="handleTabChange">
-				<el-radio-button label="day">七天</el-radio-button>
+			<el-radio-group v-if="type === 'tabs'" v-model="activeTab" size="small" @input="handleTabChange">
+<!--				<el-radio-button label="day">七天</el-radio-button>-->
 				<el-radio-button label="month">月</el-radio-button>
 				<el-radio-button label="year">年</el-radio-button>
-<!--				<el-radio-button label="total">累计</el-radio-button>-->
+				<el-radio-button label="total">累计</el-radio-button>
 			</el-radio-group>
+			<el-date-picker
+					v-if="type === 'dates'"
+					v-model="dateRange"
+					type="daterange"
+					range-separator="至"
+					start-placeholder="开始日期"
+					end-placeholder="结束日期">
+			</el-date-picker>
 		</div>
 		
 		<!-- 图表容器 -->
-		<div ref="chartRef" class="chart-container"></div>
+		<div ref="chartRef" :style="{'height': height + 'px'}"></div>
 	</div>
 </template>
 
 <script>
 export default {
+	props: {
+		type: {
+			type: String,
+			default: 'tabs'
+		},
+		chartTitle: {
+			type: String,
+			default: '全站充放电量'
+		},
+		height: {
+			type: Number,
+			default: 350
+		}
+	},
 	data() {
 		return {
-			chartTitle: '全站充放电量',
 			activeTab: 'month',
+			dateRange: '',
 			chartInstance: null,
 			chartData: {
 				month: {
@@ -77,9 +99,9 @@ export default {
 					splitLine: { lineStyle: { type: 'dashed' } }
 				},
 				grid: {
-					left: '3%',
-					right: '4%',
-					bottom: '10%',
+					left: '1%',
+					right: '1%',
+					bottom: '0%',
 					containLabel: true
 				},
 				series: [
@@ -116,15 +138,12 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 .chart-title {
 	margin: 0;
 	font-size: 16px;
 	font-weight: 600;
-}
-.chart-container {
-	height: 350px;
 }
 /* 深度选择器处理Element UI样式 */
 ::v-deep .el-tabs__header {

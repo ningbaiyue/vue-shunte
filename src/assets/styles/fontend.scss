@@ -112,3 +112,77 @@
         height: 54px;
     }
 }
+.flex-space-between {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}
+.nav-title {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    .xian {
+        width: 5px;
+        height: 18px;
+        background: #486ff2;
+        display: inline-block;
+        margin-right: 10px;
+    }
+}
+.dian {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #486ff2;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+ul, p {
+    padding: 0;
+    margin: 0;
+}
+.status-green {
+    color: #67C23A;
+}
+.status-info {
+    color: #1a1f2b;
+}
+.status-text {
+    background: #F0F3F7;
+    padding: 10px 0;
+    font-size: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    .one-text {
+        font-weight: 600;
+        font-size: 15px;
+        line-height: 20px;
+    }
+}
+.bigText {
+    font-size: 20px;
+}
+.infoList {
+    border-top: 1px solid #e1e1e1;
+    border-left: 1px solid #e1e1e1;
+    font-size: 14px;
+    margin-top: 10px;
+    li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e1e1e1;
+        div {
+            border-right: 1px solid #e1e1e1;
+            line-height: 36px;
+            width: 100%;
+            padding: 0 10px;
+            &:last-child {
+                display: flex;
+                justify-content: end;
+                background: #f8f8f8;
+            }
+        }
+    }
+}

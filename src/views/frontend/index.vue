@@ -96,7 +96,7 @@
 			</el-col>
 		<!-- 右边区域 -->
 			<el-col :span="14">
-				<el-card body-style="padding-bottom:100px;">
+				<el-card body-style="padding-bottom:90px;">
 					<el-row :gutter="50" class="mb10">
 						<el-col :span="8" class="iconText">
 							<div class="earning-item flex justify-center">
@@ -205,7 +205,7 @@
 				</el-card>
 <!--		实时运行折线图		-->
 				<el-card class="mt10">
-					<div ref="chart" style="width: 100%; height: 320px;"></div>
+					<time-line ref="timeLine" :option-set="option" :series-data="series"></time-line>
 				</el-card>
 			</el-col>
 		</el-row>
@@ -214,9 +214,10 @@
 
 <script>
 import EnergyChart from './components/EnergyChart'
+import TimeLine from "@/views/frontend/components/timeLine";
 
 export default {
-	components: { EnergyChart },
+	components: { EnergyChart, TimeLine },
 	data() {
 		return {
 			queryParams: {
@@ -224,7 +225,8 @@ export default {
 			},
 			selectList: [{value: 1, label: '广州'}, {value: 2, label: '深圳'}],
 			activeChart: 'first',
-			tableData: [{
+			tableData: [
+					{
 				date: '2016-05-02',
 				name: '王小虎',
 				address: '上'
@@ -247,33 +249,9 @@ export default {
 					text: '实时功率监控曲线',
 					left: 'center'
 				},
-				tooltip: {
-					trigger: 'axis',
-					axisPointer: {
-						type: 'cross'
-					}
-				},
 				legend: {
 					data: ['储能单元1', '储能单元2', '储能单元3', '电网', '负载', '光伏'],
 					top: 30
-				},
-				grid: {
-					top: 100,
-					left: 50,
-					right: 50,
-					bottom: 50
-				},
-				xAxis: {
-					type: 'time',
-					boundaryGap: false,
-					min: null,  // 动态设置
-					max: null,  // 动态设置
-					axisLabel: {
-						formatter: (value) => {
-							const date = new Date(value)
-							return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-						}
-					}
 				},
 				yAxis: {
 					type: 'value',
@@ -290,28 +268,19 @@ export default {
 					this.createSeries('光伏', '#3BA272')
 				]
 			},
-			startTime: new Date().setHours(0, 0, 0, 0), // 当天00:00
-			currentTime: null,
-			maxDuration: 24 * 60 * 60 * 1000, // 24小时
-			interval: 15000 // 15秒
+			series: {
+				'储能单元1': Math.random() * 100 - 50,
+				'储能单元2': Math.random() * 100 - 50,
+				'储能单元3': Math.random() * 100 - 50,
+				'电网': Math.random() * 100 - 50,
+				'负载': Math.random() * 100 - 50,
+				'光伏': Math.random() * 100 - 50
+			}
 		}
 	},
 	mounted() {
 		this.getAllList();
 		this.updateLightPoints();
-		
-		this.initChart()
-		// 每15秒更新数据
-		this.timer = setInterval(() => {
-			this.updateData()
-		}, this.interval)
-		
-		window.addEventListener('resize', () => this.chart?.resize())
-	},
-	beforeDestroy() {
-		clearInterval(this.timer)
-		window.removeEventListener('resize', () => this.chart?.resize())
-		this.chart?.dispose()
 	},
 	methods: {
 		createSeries(name, color) {
@@ -324,63 +293,6 @@ export default {
 				itemStyle: { color },
 				animation: false
 			}
-		},
-		initChart() {
-			this.chart = this.$echarts.init(this.$refs.chart)
-			// 初始化时间范围
-			this.currentTime = this.startTime
-			this.option.xAxis.min = this.startTime
-			this.option.xAxis.max = this.startTime + this.interval
-			this.chart.setOption(this.option)
-		},
-		
-		generateMockData() {
-			return {
-				'储能单元1': Math.random() * 100 - 50,
-				'储能单元2': Math.random() * 100 - 50,
-				'储能单元3': Math.random() * 100 - 50,
-				'电网': Math.random() * 100 - 50,
-				'负载': Math.random() * 100 - 50,
-				'光伏': Math.random() * 100 - 50
-			}
-		},
-		
-		updateData() {
-			if (this.currentTime - this.startTime >= this.maxDuration) {
-				return // 达到24小时停止更新
-			}
-			
-			// 生成新时间点
-			this.currentTime += this.interval
-			const newTime = this.currentTime
-			
-			// 生成模拟数据
-			const newData = this.generateMockData()
-			
-			// 更新各系列数据
-			this.option.series.forEach(series => {
-				series.data.push({
-					name: newTime,
-					value: [newTime, newData[series.name]]
-				})
-			})
-			
-			// 动态扩展时间轴
-			this.option.xAxis.max = newTime
-			
-			// 自动滚动时间轴（保持显示最近4小时）
-			if (newTime - this.option.xAxis.min > 4 * 60 * 60 * 1000) {
-				this.option.xAxis.min = newTime - 4 * 60 * 60 * 1000
-			}
-			
-			// 更新图表配置
-			this.chart.setOption({
-				xAxis: {
-					min: this.option.xAxis.min,
-					max: this.option.xAxis.max
-				},
-				series: this.option.series.map(s => ({ data: s.data }))
-			})
 		},
 		getAllList() {},
 		/** 搜索按钮操作 */

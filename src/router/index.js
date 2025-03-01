@@ -79,21 +79,67 @@ export const frontendRoutes = [
     ]
   },
   {
-    path: '/equipment',
+    path: '/energy',
     component: Layout,
     meta: { title: '设备监控', icon: 'monitor' },
     isFrontend: true,
     children: [
       {
-        path: 'pcs',
-        component: () => import('@/views/frontend/bms'),
-        meta: { title: '储能单元PCS' }
+        path: '',
+        component: () => import('@/views/frontend/energy'),
+        meta: { title: '储能单元' }
       },
       {
-        path: 'pcs1',
-        component: () => import('@/views/frontend/bms'),
-        meta: { title: '储能单元PCS1' }
-      }
+        path: 'batteryBMS',
+        component: () => import('@/views/frontend/energy/batteryBMS'),
+        meta: { title: 'BMS', addTitle: '储能单元' }
+      },
+      {
+        path: 'batteryBMS/clusters/:id(\\d+)',
+        hidden: true,
+        component: () => import('@/views/frontend/energy/batteryClusters'),
+        meta: { title: '电池簇', activeMenu: '/energy/batteryBMS', addTitle: '储能单元 / BMS' }
+      },
+      {
+        path: 'PCS',
+        component: () => import('@/views/frontend/energy/PCS'),
+        meta: { title: 'PCS', addTitle: '储能单元' }
+      },
+      {
+        path: 'airConditioning',
+        component: () => import('@/views/frontend/energy/airConditioning'),
+        meta: { title: '空调', addTitle: '储能单元' }
+      },
+      {
+        path: 'temperature',
+        component: () => import('@/views/frontend/energy/temperature'),
+        meta: { title: '温度度主机', addTitle: '储能单元' }
+      },
+      {
+        path: 'energyMeters',
+        component: () => import('@/views/frontend/energy/energyMeters'),
+        meta: { title: '储能电表', addTitle: '储能单元' }
+      },
+      {
+        path: 'loadMeters',
+        component: () => import('@/views/frontend/energy/loadMeters'),
+        meta: { title: '负载电表', addTitle: '储能单元' }
+      },
+      {
+        path: 'gridMeters',
+        component: () => import('@/views/frontend/energy/gridMeters'),
+        meta: { title: '电网电表', addTitle: '储能单元' }
+      },
+      {
+        path: 'DI',
+        component: () => import('@/views/frontend/energy/DI'),
+        meta: { title: 'DI', addTitle: '储能单元' }
+      },
+      {
+        path: 'DO',
+        component: () => import('@/views/frontend/energy/DO'),
+        meta: { title: 'DO', addTitle: '储能单元' }
+      },
     ]
   },
   {
