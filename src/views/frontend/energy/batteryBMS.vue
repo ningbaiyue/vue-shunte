@@ -133,7 +133,7 @@
 				<el-table-column prop="g" label="单体最低温度"></el-table-column>
 				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
 					<template slot-scope="scope">
-						<el-button size="small" type="text" style="padding:5px;" @click="detailed(scope.row)">修改</el-button>
+						<el-button size="small" type="text" style="padding:5px;" @click="detailed(scope.row)">详情</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -294,7 +294,7 @@ export default {
 	mounted() {},
 	methods: {
 		detailed(row) {
-			this.$router.push('/energy/batteryBMS/clusters/' + '1')
+			this.$router.push('/energy/BMS/clusters/' + '1')
 		},
 		createSeries(name, color) {
 			return {

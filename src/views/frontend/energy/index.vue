@@ -55,7 +55,7 @@
 				</el-row>
 				<!--		拆线图			-->
 				<el-row>
-					<el-card body-style="padding:0 10px;">
+					<el-card body-style="padding:10px;">
 						<time-line ref="timeLine" :option-set="option" :series-data="series" :height="300"></time-line>
 					</el-card>
 				</el-row>
@@ -133,7 +133,7 @@
 						<div class="card-title"><span class="dian"></span>PCS</div>
 						<div>
 							<el-button plain size="mini" @click="handleAllocate">配置</el-button>
-							<el-button plain size="mini">详情</el-button>
+							<el-button plain size="mini" @click="detailPCS">详情</el-button>
 						</div>
 					</div>
 					<ul class="nth mt10">
@@ -175,7 +175,7 @@
 						<div class="card-title"><span class="dian"></span>BMS</div>
 						<div>
 							<el-button plain size="mini" @click="handleAllocate">配置</el-button>
-							<el-button plain size="mini">详情</el-button>
+							<el-button plain size="mini" @click="detailBMS">详情</el-button>
 						</div>
 					</div>
 					<ul class="nth mt10">
@@ -217,7 +217,7 @@
 						<div class="card-title"><span class="dian"></span>空调</div>
 						<div>
 							<el-button plain size="mini" @click="handleAllocate">配置</el-button>
-							<el-button plain size="mini">详情</el-button>
+							<el-button plain size="mini" @click="detailAir">详情</el-button>
 						</div>
 					</div>
 					<ul class="nth mt10">
@@ -300,8 +300,8 @@
 					<div class="flex-space-between">
 						<div class="card-title"><span class="dian"></span>消防</div>
 						<div>
-							<el-button plain size="mini" @click="handleAllocate">配置</el-button>
-							<el-button plain size="mini">详情</el-button>
+<!--							<el-button plain size="mini" @click="handleAllocate">配置</el-button>-->
+							<el-button plain size="mini" @click="detailFire">详情</el-button>
 						</div>
 					</div>
 					<ul class="nth mt10">
@@ -342,8 +342,8 @@
 					<div class="flex-space-between">
 						<div class="card-title"><span class="dian"></span>电表</div>
 						<div>
-							<el-button plain size="mini" @click="handleAllocate">配置</el-button>
-							<el-button plain size="mini">详情</el-button>
+<!--							<el-button plain size="mini" @click="handleAllocate">配置</el-button>-->
+							<el-button plain size="mini" @click="detailMeters">详情</el-button>
 						</div>
 					</div>
 					<ul class="nth mt10">
@@ -454,6 +454,26 @@ export default {
 		handleAllocate() {},
 		handleTabChange(val) {
 			console.log(val)
+		},
+		/** 最下面PCS跳转详情页 **/
+		detailPCS() {
+			this.$router.push('/energy/PCS')
+		},
+		/** 最下面BMS跳转详情页 **/
+		detailBMS() {
+			this.$router.push('/energy/BMS')
+		},
+		/** 最下面空调跳转详情页 **/
+		detailAir() {
+			this.$router.push('/energy/airConditioning')
+		},
+		/** 最下面电表跳转详情页 **/
+		detailMeters() {
+			this.$router.push('/energy/meters')
+		},
+		/** 最下面消防跳转详情页 **/
+		detailFire() {
+			this.$router.push('/energy/fire')
 		}
 	}
 }

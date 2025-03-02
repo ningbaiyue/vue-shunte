@@ -90,27 +90,42 @@ export const frontendRoutes = [
         meta: { title: '储能单元' }
       },
       {
-        path: 'batteryBMS',
+        path: 'BMS',
+        hidden: true,
         component: () => import('@/views/frontend/energy/batteryBMS'),
         meta: { title: 'BMS', addTitle: '储能单元' }
       },
       {
-        path: 'batteryBMS/clusters/:id(\\d+)',
+        path: 'BMS/clusters/:id(\\d+)',
         hidden: true,
         component: () => import('@/views/frontend/energy/batteryClusters'),
-        meta: { title: '电池簇', activeMenu: '/energy/batteryBMS', addTitle: '储能单元 / BMS' }
+        meta: { title: '电池簇', activeMenu: '/energy/BMS', addTitle: '储能单元 / BMS' }
       },
       {
         path: 'PCS',
+        hidden: true,
         component: () => import('@/views/frontend/energy/PCS'),
         meta: { title: 'PCS', addTitle: '储能单元' }
       },
       {
         path: 'airConditioning',
+        hidden: true,
         component: () => import('@/views/frontend/energy/airConditioning'),
         meta: { title: '空调', addTitle: '储能单元' }
       },
       {
+        path: 'fire',
+        hidden: true,
+        component: () => import('@/views/frontend/energy/fire'),
+        meta: { title: '消防', addTitle: '储能单元' }
+      },
+      {
+        path: 'meters',
+        hidden: true,
+        component: () => import('@/views/frontend/energy/meters'),
+        meta: { title: '电表', addTitle: '储能单元' }
+      },
+      /*{
         path: 'temperature',
         component: () => import('@/views/frontend/energy/temperature'),
         meta: { title: '温度度主机', addTitle: '储能单元' }
@@ -139,7 +154,7 @@ export const frontendRoutes = [
         path: 'DO',
         component: () => import('@/views/frontend/energy/DO'),
         meta: { title: 'DO', addTitle: '储能单元' }
-      },
+      },*/
     ]
   },
   {
