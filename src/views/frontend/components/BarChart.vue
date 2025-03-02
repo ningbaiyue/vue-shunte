@@ -1,6 +1,6 @@
 <template>
 	<div class="bar-chart">
-		<div ref="barChart" style="width: 100%; height: 300px;"></div>
+		<div ref="barChart" style="width: 100%;" :style="{'height': height}"></div>
 	</div>
 </template>
 
@@ -19,6 +19,14 @@ export default {
 		seriesData: {
 			type: Array,
 			default: null
+		},
+		seriesColor: {
+			type: String,
+			default: '#36a2eb'
+		},
+		height: {
+			type: String,
+			default: '300px'
 		}
 	},
 	data() {
@@ -89,7 +97,7 @@ export default {
 						type: 'bar', // 柱状图类型
 						data: this.seriesData, // 柱状图数据
 						itemStyle: {
-							color: '#36a2eb' // 柱状图颜色
+							color: this.seriesColor // 柱状图颜色
 						},
 						barWidth: '40%' // 柱状图宽度
 					}

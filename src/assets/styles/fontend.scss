@@ -161,7 +161,16 @@ ul, p {
     }
 }
 .bigText {
+    font-weight: 600;
     font-size: 20px;
+    line-height: 28px;
+}
+.blue-line {
+    width: 10px;
+    height: 36px;
+    background: #486ff2;
+    margin-right: 30px;
+    border-radius: 10px;
 }
 .infoList {
     border-top: 1px solid #e1e1e1;
@@ -177,6 +186,9 @@ ul, p {
             border-right: 1px solid #e1e1e1;
             line-height: 36px;
             width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             padding: 0 10px;
             &:last-child {
                 display: flex;

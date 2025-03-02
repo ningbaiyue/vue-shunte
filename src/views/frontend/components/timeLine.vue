@@ -84,7 +84,7 @@ export default {
 			
 			// 更新各系列数据
 			this.option.series.forEach(series => {
-				// console.log(series, 888)
+				console.log(series, newTime,newData,888)
 				series.data.push({
 					name: newTime,
 					value: [newTime, newData[series.name]]

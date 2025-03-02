@@ -13,7 +13,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">在线</div>
+							<div class="bigText status-green">在线</div>
 							<div>在线状态</div>
 						</div>
 					</div>
@@ -40,7 +40,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">正常</div>
+							<div class="bigText status-green">正常</div>
 							<div>告警状态</div>
 						</div>
 					</div>
@@ -67,7 +67,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">闭合</div>
+							<div class="bigText status-info">闭合</div>
 							<div>接触器状态</div>
 						</div>
 					</div>
@@ -94,7 +94,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">充电</div>
+							<div class="bigText status-green">充电</div>
 							<div>充放电状态</div>
 						</div>
 					</div>
@@ -185,7 +185,7 @@
 		<el-row :gutter="10" class="mb10">
 			<el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
 				<el-card body-style="padding: 10px;">
-					<two-bar-chart :seriesData1="seriesData1" :series-data2="seriesData2" :legend-data="['日充电电量', '日放电电量']" y-axis-name="kWh" />
+					<two-bar-chart :seriesData1="seriesData1" :series-data2="seriesData2" :x-axis-name-show="false" :legend-data="['日充电电量', '日放电电量']" y-axis-name="kWh" />
 				</el-card>
 			</el-col>
 			<el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
@@ -311,17 +311,5 @@ export default {
 
 <style scoped lang="scss">
 @import "@/assets/styles/fontend";
-
-.bigText {
-	font-size: 20px!important;
-	line-height: 28px!important;
-}
-.blue-line {
-	width: 10px;
-	height: 36px;
-	background: #486ff2;
-	margin-right: 30px;
-	border-radius: 10px;
-}
 
 </style>

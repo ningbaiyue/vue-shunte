@@ -23,7 +23,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">在线</div>
+							<div class="bigText status-green">在线</div>
 							<div>在线状态</div>
 						</div>
 					</div>
@@ -32,7 +32,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">充电</div>
+							<div class="bigText status-green">充电</div>
 							<div>充放电状态</div>
 						</div>
 					</div>
@@ -41,7 +41,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-green">无告警</div>
+							<div class="bigText status-green">无告警</div>
 							<div>告警状态</div>
 						</div>
 					</div>
@@ -50,7 +50,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">721 V</div>
+							<div class="bigText status-info">721 V</div>
 							<div>总电压</div>
 						</div>
 					</div>
@@ -59,7 +59,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">101.1 A</div>
+							<div class="bigText status-info">101.1 A</div>
 							<div>总电流</div>
 						</div>
 					</div>
@@ -68,7 +68,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">30.1 ℃</div>
+							<div class="bigText status-info">30.1 ℃</div>
 							<div>平均温度</div>
 						</div>
 					</div>
@@ -77,7 +77,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">30.2  %</div>
+							<div class="bigText status-info">30.2  %</div>
 							<div>SOC</div>
 						</div>
 					</div>
@@ -86,7 +86,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">145 kWh</div>
+							<div class="bigText status-info">145 kWh</div>
 							<div>日充电量</div>
 						</div>
 					</div>
@@ -95,7 +95,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">101.1  kWh</div>
+							<div class="bigText status-info">101.1  kWh</div>
 							<div>日放电量</div>
 						</div>
 					</div>
@@ -104,7 +104,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">145 kWh</div>
+							<div class="bigText status-info">145 kWh</div>
 							<div>累计充电电量</div>
 						</div>
 					</div>
@@ -113,7 +113,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">101.1  kWh</div>
+							<div class="bigText status-info">101.1  kWh</div>
 							<div>累计放电电量</div>
 						</div>
 					</div>
@@ -122,7 +122,7 @@
 					<div class="status-text flex align-center">
 						<div class="blue-line"></div>
 						<div>
-							<div class="one-text bigText status-info">3 KΩ</div>
+							<div class="bigText status-info">3 KΩ</div>
 							<div>绝缘电阻</div>
 						</div>
 					</div>
@@ -266,6 +266,7 @@
 						<el-table
 								:data="tableData"
 								style="width: 100%"
+								:header-cell-style="{'background': '#F7F7F7', 'line-height': '14px'}"
 								stripe
 								@sort-change="handleSortChange"
 						>
@@ -441,13 +442,6 @@ export default {
 <style scoped lang="scss">
 @import "@/assets/styles/fontend";
 
-.blue-line {
-	width: 10px;
-	height: 36px;
-	background: #486ff2;
-	margin-right: 30px;
-	border-radius: 10px;
-}
 .info-text {
 	font-size: 14px;
 	color: #486ff2;

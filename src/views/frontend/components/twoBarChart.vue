@@ -27,6 +27,10 @@ export default {
 		legendData: {
 			type: Array,
 			default: null
+		},
+		xAxisNameShow: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -59,7 +63,7 @@ export default {
 				xAxis: {
 					type: 'category',
 					data: this.xAxisData, // X 轴数据
-					show: false,
+					show: this.xAxisNameShow,
 				},
 				yAxis: {
 					type: 'value',
