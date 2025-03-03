@@ -158,13 +158,28 @@ export const frontendRoutes = [
     ]
   },
   {
-    path: '/allocate',
+    path: '/logging',
+    component: Layout,
+    meta: { title: '事件记录', icon: 'chart' },
+    isFrontend: true,
+    children: [
+      { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '当前事件' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '历史事件' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '事件统计' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '操作记录' }},
+    ]
+  },
+  {
+    path: '/report',
     component: Layout,
     meta: { title: '统计报表', icon: 'chart' },
     isFrontend: true,
     children: [
       { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '事件报表' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '电量报表' }}
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '电量报表' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '收益报表' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '功率报表' }},
+      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '运行状态报表' }},
     ]
   },
   {

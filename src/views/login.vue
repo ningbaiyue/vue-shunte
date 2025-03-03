@@ -1,83 +1,78 @@
 <template>
   <div class="login">
-    <el-row>
-      <el-col :xs="24">
-        <div
-          style="color: #fff; background-color: #0f73ee; width: 100%; height: 200px; text-align: center; padding: 15px; font-family: '微软雅黑'">
-          <div style="font-size: 42px; padding-top: 40px; width: 300px; margin: 0 auto">
-            <img :src="logo" alt="logo" style="width: 100px; height: 100px; float: left" />
-            <div style="float: left; margin-top: 13px; width: 200px; text-align: left">
-              <div>FastBee</div>
-              <div style="letter-spacing: 1.5px; font-size: 20px; font-weight: 600; margin-top: -8px; margin-left: 3px">
-                开源物联网平台</div>
-            </div>
-          </div>
-        </div>
-
-        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-          <el-form-item>
-            <div class="alert-box-wrap" v-if="loginForm.bindId != null">
-              <div v-if="loginForm.bindId != null" class="alert-message-wrap">
-                <i class="el-icon-warning" />
-                如果你已经有账号,请直接输入账号进行绑定，
-              </div>
-              <el-row>
-                <el-col :span="10.5">
-                  <div v-if="loginForm.bindId != null" class="alert-message-wrap">
-                    如果还没有账号，请先去</div>
-                </el-col>
-                <!-- <el-col :span="4"> -->
-                <router-link v-if="loginForm.bindId != null" :to="{ path: '/register', query: this.$route.query }"
-                  style="margin-left: 10px; font-size: 14px; font-family: '微软雅黑'; color: rgba(41, 96, 197, 0.856);">
-                  注册
-                </router-link>
-                <!-- </el-col> -->
-              </el-row>
-            </div>
-          </el-form-item>
-          <el-form-item prop="username">
-            <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
-              <svg-icon slot="prefix" icon-class="user" class="input-icon" />
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码"
-              @keyup.enter.native="handleLogin">
-              <svg-icon slot="prefix" icon-class="password" class="input-icon" />
-            </el-input>
-          </el-form-item>
-          <el-form-item v-if="captchaOnOff" prop="code">
-            <el-input v-model="loginForm.code" auto-complete="off" placeholder="验证码" style="width: 63%"
-              @keyup.enter.native="handleLogin">
-              <svg-icon slot="prefix" icon-class="validCode" class="input-icon" />
-            </el-input>
-
-            <div class="login-code">
-              <img :src="codeUrl" @click="getCode" />
-            </div>
-          </el-form-item>
-          <el-checkbox v-model="loginForm.rememberMe" style="margin: 0px 0px 25px 0px; color: #000">记住密码</el-checkbox>
-
-          <el-form-item style="width: 100%">
-            <div style="margin-bottom: 10px">
-              <el-button v-if="!bindAccount" :loading="loading" type="primary" style="width: 100%"
-                @click.native.prevent="handleLogin">
-                <span v-if="!loading">登 录</span>
-                <span v-else>登 录 中...</span>
-              </el-button>
-            </div>
-            <el-row>
-              <div>
-               <el-link href="https://fastbee.cn/" :underline="false" target="_blank" style="float: left">返回官网</el-link>
-               <el-link href="https://fastbee.cn/doc" :underline="false" target="_blank" style="float: left; margin-left: 20px">查看文档</el-link>
-                <router-link v-if="!bindAccount" :to="{ path: '/register', query: this.$route.query }"
-                  style="float: left;margin-left:20px;">注册账号</router-link>
-              </div>
-            </el-row>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+		<el-row class="login-row">
+			<div class="touMing">
+				<el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+					<div class="bindAccountTitle">我们专注于为家庭、工商业、电网和公用工程提供优质的产品和服务
+					</div>
+				</el-col>
+				<el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" class="login-col">
+					<div class="logo-title">欢迎登录EMS云平台</div>
+					<el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+						<el-form-item>
+							<div class="alert-box-wrap" v-if="loginForm.bindId != null">
+								<div v-if="loginForm.bindId != null" class="alert-message-wrap">
+									<i class="el-icon-warning" />
+									如果你已经有账号,请直接输入账号进行绑定，
+								</div>
+								<el-row>
+									<el-col :span="10.5">
+										<div v-if="loginForm.bindId != null" class="alert-message-wrap">
+											如果还没有账号，请先去</div>
+									</el-col>
+									<!-- <el-col :span="4"> -->
+									<router-link v-if="loginForm.bindId != null" :to="{ path: '/register', query: this.$route.query }"
+															 style="margin-left: 10px; font-size: 14px; font-family: '微软雅黑'; color: rgba(41, 96, 197, 0.856);">
+										注册
+									</router-link>
+									<!-- </el-col> -->
+								</el-row>
+							</div>
+						</el-form-item>
+						<el-form-item prop="username">
+							<el-input class="custom-placeholder" v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
+								<svg-icon slot="prefix" icon-class="user" class="input-icon" />
+							</el-input>
+						</el-form-item>
+						<el-form-item prop="password">
+							<el-input class="custom-placeholder" v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码"
+												@keyup.enter.native="handleLogin">
+								<svg-icon slot="prefix" icon-class="password" class="input-icon" />
+							</el-input>
+						</el-form-item>
+						<el-form-item v-if="captchaOnOff" prop="code">
+							<el-input class="custom-placeholder" v-model="loginForm.code" auto-complete="off" placeholder="验证码" style="width: 63%"
+												@keyup.enter.native="handleLogin">
+								<svg-icon slot="prefix" icon-class="validCode" class="input-icon" />
+							</el-input>
+							
+							<div class="login-code">
+								<img :src="codeUrl" @click="getCode" />
+							</div>
+						</el-form-item>
+						<el-checkbox v-model="loginForm.rememberMe" style="margin: 0px 0px 25px 0px; color: #000">记住密码</el-checkbox>
+						
+						<el-form-item style="width: 100%">
+							<div style="margin-bottom: 10px">
+								<el-button v-if="!bindAccount" :loading="loading"
+													 @click.native.prevent="handleLogin" class="login-btn">
+									<span v-if="!loading">登 录</span>
+									<span v-else>登 录 中...</span>
+								</el-button>
+							</div>
+							<!--            <el-row>
+														<div>
+														 <el-link href="https://fastbee.cn/" :underline="false" target="_blank" style="float: left">返回官网</el-link>
+														 <el-link href="https://fastbee.cn/doc" :underline="false" target="_blank" style="float: left; margin-left: 20px">查看文档</el-link>
+															<router-link v-if="!bindAccount" :to="{ path: '/register', query: this.$route.query }"
+																style="float: left;margin-left:20px;">注册账号</router-link>
+														</div>
+													</el-row>-->
+						</el-form-item>
+					</el-form>
+				</el-col>
+			</div>
+		</el-row>
     <!--  底部  -->
     <div class="el-login-footer">
       <span>
@@ -91,7 +86,7 @@
 
 <script>
 import 'element-ui/lib/theme-chalk/display.css';
-import logo from '@/assets/logo/logo.gif';
+// import logo from '@/assets/logo/logo.gif';
 import { getCodeImg, checkBindId, getErrorMsg, socialLogin, bindLogin } from '@/api/login';
 import Cookies from 'js-cookie';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
@@ -101,7 +96,7 @@ export default {
   name: 'Login',
   data() {
     return {
-      logo,
+      // logo,
       codeUrl: '',
       loginForm: {
         username: '',
@@ -355,36 +350,117 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login {
   height: 100%;
-  overflow: auto;
+  display: flex;
+	justify-content: center;
+	align-items: center;
+	background-image: url("../assets/logo/login-background.png");
+	background-size: cover;
+}
+.login-row {
+	width: 1000px;
+	margin: 0 auto;
+	border: 1px solid #fff;
+	border-radius: 6px;
+}
+.touMing {
+	backdrop-filter: blur(10px);
+	background-color: rgba(255, 255, 255, 0.1); /* 添加一些透明度 */
+	margin: 6px 6px 1px 6px;
+	border-radius: 6px;
+	display: inline-block;
+	.login-col {
+		backdrop-filter: blur(10px);
+		background: rgba(255, 255, 255, 0.3);
+		border-bottom-right-radius: 6px;
+		border-top-right-radius: 6px;
+		.logo-title {
+			font-size: 24px;
+			color: #0D2253;
+			font-weight: bold;
+			text-align: center;
+			margin-top: 60px;
+			&::after{
+				content: '';
+				width: 100px;
+				height: 2px;
+				display: block;
+				background: #0D2253;
+				margin: 4px auto 0;
+			}
+		}
+	}
+}
+/* 设置占位文本的颜色 */
+.custom-placeholder ::placeholder {
+	color: #7f83a6; /* 红色 */
+	opacity: 1; /* 确保颜色完全显示 */
 }
 
+/* 兼容不同浏览器的占位文本样式 */
+.custom-placeholder :-ms-input-placeholder {
+	color: #7f83a6;
+}
+
+.custom-placeholder ::-ms-input-placeholder {
+	color: #7f83a6;
+}
 .bindAccountTitle {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #333;
-  font-size: 24px;
+  margin: 150px 60px;
+  text-align: left;
+  color: #fff;
+  font-size: 18px;
 }
-
+::v-deep .el-input__inner, ::v-deep .el-input__inner:hover, ::v-deep .el-input__inner:focus {
+	border-color: transparent;
+	background-color: transparent;
+	border-bottom-style: solid;
+	border-bottom-width: 2px;
+	border-bottom-color: #f1f1f1;
+}
+::v-deep .el-form-item.is-error .el-input__inner, ::v-deep .el-form-item.is-error .el-input__inner:focus {
+	border-color: transparent;
+	border-bottom-style: solid;
+	border-bottom-width: 2px;
+	border-bottom-color: #F56C6C;
+}
 .login-form {
-  margin: 30px auto 0 auto;
+  margin: 0 auto 0 auto;
   padding: 15px;
   z-index: 1000;
   max-width: 350px;
 
   input {
     height: 38px;
-    background-color: #f1f1f1;
+		background: rgba(255, 255, 255, 0);
     color: #666;
   }
+	::v-deep .el-input__inner, ::v-deep .is-checked .el-checkbox__label {
+		color: #0D2253 !important;
+	}
+	::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
+		background: #0D2253;
+		border-color: #0D2253;
+	}
 
   .input-icon {
     height: 39px;
     width: 14px;
     margin-left: 2px;
   }
+	.svg-icon {
+		fill: #0D2253;
+	}
+	.login-btn {
+		width: 160px;
+		background: #fff;
+		border: 1px solid #0D2253;
+		border-radius: 60px;
+		height: 60px;
+		color: #0D2253;
+	}
 }
 
 .login-code {
@@ -398,7 +474,6 @@ export default {
     height: 38px;
   }
 }
-
 .el-login-footer {
   height: 40px;
   line-height: 40px;
