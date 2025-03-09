@@ -163,10 +163,10 @@ export const frontendRoutes = [
     meta: { title: '事件记录', icon: 'chart' },
     isFrontend: true,
     children: [
-      { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '当前事件' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '历史事件' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '事件统计' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '操作记录' }},
+      { path: 'current', component: () => import('@/views/frontend/logging/current.vue'), meta: { title: '当前事件' }},
+      { path: 'history', component: () => import('@/views/frontend/logging/history.vue'), meta: { title: '历史事件' }},
+      { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '事件统计' }},
+      { path: 'operate', component: () => import('@/views/frontend/logging/operate.vue'), meta: { title: '操作记录' }},
     ]
   },
   {
@@ -175,11 +175,11 @@ export const frontendRoutes = [
     meta: { title: '统计报表', icon: 'chart' },
     isFrontend: true,
     children: [
-      { path: 'event', component: () => import('@/views/frontend/bms'), meta: { title: '事件报表' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '电量报表' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '收益报表' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '功率报表' }},
-      { path: 'power', component: () => import('@/views/frontend/bms'), meta: { title: '运行状态报表' }},
+      { path: 'event', component: () => import('@/views/frontend/report/event'), meta: { title: '事件报表' }},
+      { path: 'electricity', component: () => import('@/views/frontend/report/electricity'), meta: { title: '电量报表' }},
+      { path: 'earnings', component: () => import('@/views/frontend/report/earnings'), meta: { title: '收益报表' }},
+      { path: 'power', component: () => import('@/views/frontend/report/power'), meta: { title: '功率报表' }},
+      { path: 'runStatus', component: () => import('@/views/frontend/report/runStatus'), meta: { title: '运行状态报表' }},
     ]
   },
   {
