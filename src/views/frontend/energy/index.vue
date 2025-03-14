@@ -379,20 +379,49 @@
 				</el-card>
 			</el-col>
 		</el-row>
+		
+		<!--	配置弹出框	-->
+		<el-dialog title="储能单元1 配置管理" :visible.sync="open" width="1680px" center>
+			<el-tabs v-model="dialogTabsName" class="tabs">
+				<el-tab-pane label="控制策略" name="first">
+					<control-policy @close="closeDialog" />
+				</el-tab-pane>
+				<el-tab-pane label="分时电价" name="second">
+					<time-tariff @close="closeDialog" />
+				</el-tab-pane>
+				<el-tab-pane label="电池保护" name="third">
+					<battery-protection @close="closeDialog" />
+				</el-tab-pane>
+				<el-tab-pane label="基本参数" name="fourth">
+					<basic-parameters @close="closeDialog" />
+				</el-tab-pane>
+				<el-tab-pane label="控制命令" name="fifth">
+					<control-commands @close="closeDialog" />
+				</el-tab-pane>
+			</el-tabs>
+		</el-dialog>
 	</div>
 </template>
+
 <script>
 import pic1 from '../../../assets/images/frontend/pic1.png'
 import pic2 from '../../../assets/images/frontend/pic2.png'
 import pic3 from '../../../assets/images/frontend/pic3.png'
-import TimeLine from "@/views/frontend/components/timeLine.vue";
-import EnergyChart from "@/views/frontend/components/EnergyChart.vue";
+import TimeLine from "@/views/frontend/components/timeLine";
+import EnergyChart from "@/views/frontend/components/EnergyChart";
+import ControlPolicy from "@/views/frontend/energy/components/ControlPolicy";
+import TimeTariff from "@/views/frontend/energy/components/TimeTariff";
+import BasicParameters from "@/views/frontend/energy/components/BasicParameters";
+import ControlCommands from "@/views/frontend/energy/components/ControlCommands.vue";
+import BatteryProtection from "@/views/frontend/energy/components/BatteryProtection.vue";
 
 export default {
 	name: "index",
-	components: {EnergyChart, TimeLine},
+	components: {BatteryProtection, ControlCommands, BasicParameters, TimeTariff, ControlPolicy, EnergyChart, TimeLine },
 	data() {
 		return {
+			// 是否显示弹出层
+			open: false,
 			url: [pic1, pic2, pic3],
 			activeTab1: 'open',
 			activeTab2: 'open',
@@ -436,7 +465,8 @@ export default {
 				{ name: '总放电电量', value: '0.35MWh'},
 				{ name: '主从机', value: '从机'},
 				{ name: '并机数', value: '3'},
-			]
+			],
+			dialogTabsName: 'first'
 		}
 	},
 	mounted() {},
@@ -451,7 +481,15 @@ export default {
 			}
 		},
 		/**  配置弹窗  **/
-		handleAllocate() {},
+		handleAllocate() {
+			this.open = true;
+		},
+		/**  关闭弹窗  **/
+		closeDialog(flag) {
+			this.open = false;
+			// 更新接口
+			// flag && this.getList()
+		},
 		handleTabChange(val) {
 			console.log(val)
 		},
@@ -509,5 +547,30 @@ export default {
 }
 .nth > :nth-child(2n + 1) {
 	background: #e8e8e8;
+}
+.tabs {
+	::v-deep .el-tabs__nav-wrap::after, ::v-deep .el-tabs__active-bar {
+		height: 0;
+	}
+	::v-deep .el-tabs__nav {
+		float: none;
+		display: flex;
+		justify-content: center;
+	}
+	::v-deep .el-tabs__item {
+		background: #A4ADB3;
+		color: #fff;
+		width: 180px;
+		text-align: center;
+		border-radius: 6px;
+		margin: 0 20px;
+		padding: 0;
+	}
+	::v-deep .el-tabs__item.is-active {
+		background: #486ff2;
+	}
+}
+::v-deep .el-dialog__body {
+	padding: 10px 25px 30px !important;
 }
 </style>

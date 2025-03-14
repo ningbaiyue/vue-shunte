@@ -150,7 +150,7 @@
 
 <script>
 import bdMap from "@/views/frontend/components/bdMap";
-import hourlyPower from "@/views/frontend/allocate/hourlyPower";
+import hourlyPower from "@/views/frontend/components/hourlyPower.vue";
 import devicePower from "@/views/frontend/allocate/devicePower";
 
 export default {

@@ -111,11 +111,7 @@
 		</el-form>
 		<!-- 步骤2：电价配置弹出框 -->
 		<el-dialog :title="title" :visible.sync="openHourly" width="900px">
-			<hourly-power ref="hourlyPower" :init-data="step2Data"></hourly-power>
-			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitFormHourly">确 定</el-button>
-				<el-button @click="cancel">取 消</el-button>
-			</div>
+			<hourly-power ref="hourlyPower" :init-data="step2Data" :is-footer="true" @close="cancel"></hourly-power>
 		</el-dialog>
 		<!-- 步骤3：绑定设备弹出框 -->
 		<el-dialog :title="title" :visible.sync="openDevice" width="500px">
@@ -139,7 +135,7 @@
 
 <script>
 import bdMap from "@/views/frontend/components/bdMap";
-import hourlyPower from "@/views/frontend/allocate/hourlyPower";
+import hourlyPower from "@/views/frontend/components/hourlyPower";
 
 export default {
 	name: 'editPower',
@@ -285,18 +281,7 @@ export default {
 				this.openHourly = true;
 			});*/
 		},
-		/** 电价配置---提交按钮 */
-		submitFormHourly: function() {
-			this.$refs["form"].validate(valid => {
-				if (valid) {
-					/*updatePost(this.form).then(response => {
-					
-					});*/
-					this.$modal.msgSuccess("修改成功");
-					this.openHourly = false;
-				}
-			});
-		},
+		
 		/** 绑定设备---修改按钮操作 */
 		deviceUpdate(row) {
 			this.title = "编辑绑定的设备";
@@ -316,10 +301,11 @@ export default {
 		},
 		// 表单重置
 		reset() {
-			this.form = {
-				postId: undefined,
-				postCode: undefined,
-			};
+			this.step2Data = {
+				tacticsName: '',
+				effectiveTime: '',
+				tableData: []
+			}
 			this.resetForm("form");
 		},
 		/*resetForm() {

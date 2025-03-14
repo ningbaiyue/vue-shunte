@@ -3,7 +3,7 @@
 		<el-card body-style="padding:10px" class="mb10">
 			<div class="flex-space-between">
 				<div class="nav-title"><span class="xian"></span>空调信息</div>
-				<el-button type="primary" size="mini" @click="">配置</el-button>
+				<el-button type="primary" size="mini" @click="handleAllocate">配置</el-button>
 			</div>
 		</el-card>
 		
@@ -145,6 +145,53 @@
 			<div class="card-title"><span class="dian"></span>实时室内温湿度</div>
 			<div ref="line" style="width: 100%; height: 320px;"></div>
 		</el-card>
+		
+		<!--	配置弹出框	-->
+		<el-dialog title="空调配置" :visible.sync="open" width="980px" center>
+			<el-row>
+				<el-form ref="form" :model="form" label-width="120px">
+					<el-col :span="12">
+						<el-form-item label="系统电池类型">
+							<el-select v-model="form.type" placeholder="请选择">
+								<el-option v-for="item in typeOptions" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="电池单体数" prop="">
+							<el-input v-model="form.monomer" placeholder="请输入" />
+							<span>(1~600)</span>
+						</el-form-item>
+						<el-form-item label="充电桩台数" prop="">
+							<el-input v-model="form.chargingPilesNum" placeholder="请输入" />
+							<span>(1~4)</span>
+						</el-form-item>
+						<el-form-item label="BMS台数" prop="">
+							<el-input v-model="form.bmsNum" placeholder="请输入" />
+							<span>(1~4)</span>
+						</el-form-item>
+					</el-col>
+					
+					<el-col :span="12">
+						<el-form-item label="额定电池总电压" prop="">
+							<el-input v-model="form.totalVoltage" placeholder="请输入" />
+							<span>(0~38400V)</span>
+						</el-form-item>
+						<el-form-item label="电池安时数" prop="">
+							<el-input v-model="form.ampereHours" placeholder="请输入" />
+							<span>(100~360Ah)</span>
+						</el-form-item>
+						<el-form-item label="电池簇数" prop="">
+							<el-input v-model="form.clusters" placeholder="请输入" />
+							<span>(1~20)</span>
+						</el-form-item>
+					</el-col>
+				</el-form>
+			</el-row>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="cancel">取 消</el-button>
+				<el-button type="primary" @click="submitForm">确 定</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 <script>
@@ -152,6 +199,14 @@ export default {
 	name: "airConditioning",
 	data() {
 		return {
+			open: false,
+			form: {
+				type: '1',
+			},
+			typeOptions: [
+				{ value: '1', label: '磷酸铁锂电池' },
+				{ value: '2', label: '三元锂电池' },
+			],
 			chart: null,
 			option: null,
 			legendData: ['温度', '湿度'],
@@ -181,6 +236,29 @@ export default {
 		this.chart?.dispose()
 	},
 	methods: {
+		/**  配置弹窗  **/
+		handleAllocate() {
+			this.open = true;
+		},
+		/** 提交按钮 */
+		submitForm: function() {
+			this.$refs["form"].validate(valid => {
+			
+			});
+		},
+		// 取消按钮
+		cancel() {
+			this.open = false;
+			this.reset();
+		},
+		// 表单重置
+		reset() {
+			this.form = {
+				monomer: undefined,
+				status: "0",
+			};
+			this.resetForm("form");
+		},
 		renderChart() {
 			// 初始化 ECharts 实例
 			this.chart = this.$echarts.init(this.$refs.line);
@@ -315,6 +393,23 @@ export default {
 <style scoped lang="scss">
 @import "@/assets/styles/fontend";
 
+::v-deep .el-form .el-input, ::v-deep .el-form .el-select {
+	width: 70% !important;
+	margin-right: 6px;
+}
+::v-deep .el-form .el-select .el-input {
+	width: 100% !important;
+	margin-right: 0;
+}
+::v-deep .el-divider--horizontal {
+	margin: 10px auto;
+}
+.select-label {
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom: 6px;
+	margin-top: 20px;
+}
 .kd-box {
 	border: 1px #486ff2 solid;
 	padding: 10px;

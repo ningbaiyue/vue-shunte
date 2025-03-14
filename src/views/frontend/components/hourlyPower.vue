@@ -1,16 +1,24 @@
 <template>
 	<div class="app-container">
 		<slot name="title"></slot>
-		<el-form ref="form" :model="formData" :rules="rules" size="medium" :inline="true">
+		<el-form ref="form" :model="form" :rules="rules" size="medium" :inline="true">
 			<el-form-item label="策略名称" prop="tacticsName">
-				<el-input v-model="formData.tacticsName" placeholder="请输入策略名称" clearable :style="{width: '100%'}">
+				<el-input v-model="form.tacticsName" placeholder="请输入策略名称" clearable :style="{width: '100%'}">
 				</el-input>
 			</el-form-item>
 			<el-form-item label="生效时间" prop="effectiveTime">
-				<el-date-picker v-model="formData.effectiveTime" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
+				<el-date-picker v-model="form.effectiveTime" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
 												:style="{width: '100%'}" placeholder="请选择生效时间" clearable></el-date-picker>
 			</el-form-item>
+			<el-form-item label="应用电站" prop="application" v-if="isApp">
+				<el-select v-model="form.application" placeholder="请选择运行模式">
+					<el-option label="电站一" value="电站一"></el-option>
+					<el-option label="电站二" value="电站二"></el-option>
+					<el-option label="电站三" value="电站三"></el-option>
+				</el-select>
+			</el-form-item>
 		</el-form>
+		
 		<el-table :data="tableData" border style="width: 100%; margin-bottom: 20px" class="validation-table">
 			<!-- 开始时间列 -->
 			<el-table-column prop="startTime" label="开始时间">
@@ -99,6 +107,11 @@
 				<i class="el-icon-warning"></i> {{ errorMessage }}
 			</div>
 		</div>
+		
+		<div class="dialog-footer" v-if="isFooter">
+			<el-button type="primary" @click="submitFormHourly">确 定</el-button>
+			<el-button @click="cancel">取 消</el-button>
+		</div>
 		<slot name="footer"></slot>
 	</div>
 </template>
@@ -109,11 +122,19 @@ export default {
 		initData: {
 			type: Object,
 			default: () => ({})
+		},
+		isApp: {
+			type: Boolean,
+			default: false
+		},
+		isFooter: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
 		return {
-			formData: { ...this.initData },
+			form: { ...this.initData },
 			rules: {
 				tacticsName: [{
 					required: true,
@@ -143,7 +164,7 @@ export default {
 			deep: true,
 			handler(newVal) {
 				console.log(newVal, '第二步骤')
-				this.formData = { ...newVal }
+				this.form = { ...newVal }
 				this.tableData = [...newVal.tableData]
 			}
 		}
@@ -156,7 +177,7 @@ export default {
 						resolve({
 							valid: true,
 							data: {
-								...this.formData,
+								...this.form,
 								tableData: this.tableData,
 							},
 						});
@@ -165,6 +186,31 @@ export default {
 					}
 				});
 			});
+		},
+		/** 电价配置---提交按钮 */
+		submitFormHourly: function() {
+			this.$refs["form"].validate(valid => {
+				if (valid) {
+					/*updatePost(this.form).then(response => {
+					
+					});*/
+					this.$modal.msgSuccess("修改成功");
+					this.openHourly = false;
+				}
+			});
+		},
+		cancel(flay) {
+			flay = typeof flay != "boolean" ? false : flay;
+			this.$emit('close', flay)
+			this.reset()
+		},
+		reset() {
+			this.form = {
+				tacticsName: undefined,
+				effectiveTime: undefined,
+				tableData: []
+			}
+			this.resetForm("form");
 		},
 		// 新增行处理
 		handleAddRow() {
@@ -302,5 +348,9 @@ export default {
 /* 调整表格行高 */
 .validation-table ::v-deep .el-table__row {
 	height: 65px;
+}
+.dialog-footer {
+	text-align: center;
+	margin-top: 30px;
 }
 </style>

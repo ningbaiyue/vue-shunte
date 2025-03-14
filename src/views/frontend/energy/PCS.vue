@@ -3,7 +3,7 @@
 		<el-card body-style="padding:10px" class="mb10">
 			<div class="flex-space-between">
 				<div class="nav-title"><span class="xian"></span>PCS1</div>
-				<el-button type="primary" size="mini" @click="">配置</el-button>
+				<el-button type="primary" size="mini" @click="handleAllocate">配置</el-button>
 			</div>
 		</el-card>
 		
@@ -207,6 +207,28 @@
 		<el-card body-style="padding: 10px;">
 			<two-bar-chart :seriesData1="seriesData1" :series-data2="seriesData2" :legend-data="['日充电量', '日放电量']" y-axis-name="kWh" :x-axis-data="xaisDate" />
 		</el-card>
+		
+		<!--	配置弹出框	-->
+		<el-dialog title="PCS配置" :visible.sync="open" width="520px" center>
+			<el-form ref="form" :model="form" label-width="160px">
+				<el-form-item label="PCS额定功率" prop="">
+					<el-input v-model="form.monomer" placeholder="请输入" />
+					<span>(0~4500kW)</span>
+				</el-form-item>
+				<el-form-item label="交流侧调度总有功功率" prop="">
+					<el-input v-model="form.chargingPilesNum" placeholder="请输入" />
+					<span>(-110~110kW)</span>
+				</el-form-item>
+				<el-form-item label="交流侧调度总无功功率" prop="">
+					<el-input v-model="form.bmsNum" placeholder="请输入" />
+					<span>(110~110kVar)</span>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="cancel">取 消</el-button>
+				<el-button type="primary" @click="submitForm">确 定</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 <script>
@@ -219,6 +241,10 @@ export default {
 	components: {BarChart, TwoBarChart, TimeLine},
 	data() {
 		return {
+			open: false,
+			form: {
+				type: '1',
+			},
 			option: {
 				title: {
 					text: '',
@@ -291,6 +317,29 @@ export default {
 		}
 	},
 	methods: {
+		/**  配置弹窗  **/
+		handleAllocate() {
+			this.open = true;
+		},
+		/** 提交按钮 */
+		submitForm: function() {
+			this.$refs["form"].validate(valid => {
+			
+			});
+		},
+		// 取消按钮
+		cancel() {
+			this.open = false;
+			this.reset();
+		},
+		// 表单重置
+		reset() {
+			this.form = {
+				monomer: undefined,
+				status: "0",
+			};
+			this.resetForm("form");
+		},
 		createSeries(name, color) {
 			return {
 				name: name,
@@ -307,6 +356,23 @@ export default {
 <style scoped lang="scss">
 @import "@/assets/styles/fontend";
 
+::v-deep .el-form .el-input, ::v-deep .el-form .el-select {
+	width: 69% !important;
+	margin-right: 6px;
+}
+::v-deep .el-form .el-select .el-input {
+	width: 100% !important;
+	margin-right: 0;
+}
+::v-deep .el-divider--horizontal {
+	margin: 10px auto;
+}
+.select-label {
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom: 6px;
+	margin-top: 20px;
+}
 ::v-deep .el-table--medium .el-table__cell {
 	padding: 8px 0;
 }
